@@ -11,13 +11,15 @@
 
 #include <iostream>
 using std::cout;
+using std::cin;
 using std::endl;
 #include <memory>
 using std::shared_ptr;
 using std::make_shared;
 #include<fstream>
 using std::ofstream;
-
+#include<string>
+using std::string;
 
 
 struct Point
@@ -38,23 +40,30 @@ class Shape
 public:
     virtual ~Shape() = default;
     virtual void draw() = 0;
-    void createFile();
+    virtual ofstream createFile(string fileName);
     void setPoint(double x, double y);
     void setBox(double height, double width);
     Point getCurPoint(Shape *cur);
+    //virtual void rotate(Shape &s, double degree) = 0;
+    //void scaled(Shape &s, double x, double y);
+    
 private:
     Point _currentPoint;
     Box _boundingBox;
 };
 
 
-//void Shape::createFile()
-//{
-//    ofstream postScriptOut;
-//    postScriptOut.open ("ShapesOutput.ps");
-//    postScriptOut << "%!" << endl;
-//    postScriptOut << "newpath" << endl;
-//}
+
+
+ofstream Shape::createFile(string fileName)
+{
+    ofstream postScriptOut;
+    postScriptOut.open (fileName);
+    postScriptOut << "%!" << endl;
+    postScriptOut << "newpath" << endl;
+    return postScriptOut;
+}
+
 void Shape::setPoint(double x, double y)
 {
     _currentPoint._x = x;
@@ -71,6 +80,11 @@ Point Shape::getCurPoint(Shape *cur)
 {
     return _currentPoint;
 }
+
+//void Shape::scaled(Shape &s, double x, double y)
+//{
+//    
+//}
 
 class Circle : public Shape
 {
@@ -90,22 +104,23 @@ Circle::Circle(double x, double y, double radius)
     setBox(radius*2, radius*2);
 }
 
-void Circle::setRadius(double rad)
-{
-    _radius = rad;
-    setBox(rad*2, rad*2);
-}
+//void Circle::setRadius(double rad)
+//{
+//    _radius = rad;
+//    setBox(rad*2, rad*2);
+//}
 
 void Circle::draw()
 {
-    //createFile();
-    ofstream postScriptOut;
-    postScriptOut.open ("ShapesOutput.ps");
-    postScriptOut << "%!" << endl;
-    postScriptOut << "newpath" << endl;
+    string fileName;
+    cout << "Name of file: " << endl;
+    cin >> fileName;
+    ofstream postScriptOut = createFile(fileName + ".ps");
+    
     postScriptOut << getCurPoint(this)._x << " " << getCurPoint(this)._y << " " << _radius << " 0 360 arc closepath" << endl;
     postScriptOut << "stroke" << endl;
     postScriptOut << "showpage" << endl;
     postScriptOut.close();
 }
+
 #endif

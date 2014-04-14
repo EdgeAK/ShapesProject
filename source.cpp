@@ -3,8 +3,8 @@ using std::cout;
 
 struct Point
 {
-    int x;
-    int y;
+    int _x;
+    int _y;
 };
 
 struct Box
@@ -16,9 +16,27 @@ struct Box
 class Shape
 {
 public:
-    virtual ~Sshape();
+    virtual ~Shape();
     virtual void draw() const = 0;
+    void setPoint(double x, double y);
 private:
-    Point current_point;
-    Box bounding_box;
+    Point _currentPoint;
+    Box _boundingBox;
 };
+
+void Shape::setPoint(double x, double y):_currentPoint._x(x), _currentPoint._y(y)
+{}
+
+
+class Circle : public Shape
+{
+public:
+    void setRadius(double rad);
+    
+private:
+    double _radius;
+};
+
+void Circle::setRadius(double rad):_radius(rad),_boundingBox.height(rad*2), _boundingBox.width(rad*2)
+{
+}
