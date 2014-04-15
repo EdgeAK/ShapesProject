@@ -24,21 +24,21 @@ using std::string;
 
 struct Point
 {
-    int _x;
-    int _y;
+    double _x;
+    double _y;
 };
 
 struct Box
 {
-    int height;
-    int width;
+    double height;
+    double width;
 };
 
 
 class Shape
 {
 public:
-    virtual ~Shape() = default;
+    //virtual ~Shape() = 0;
     virtual void draw() = 0;
     virtual ofstream createFile(string fileName);
     void setPoint(double x, double y);
@@ -89,7 +89,7 @@ Point Shape::getCurPoint(Shape *cur)
 class Circle : public Shape
 {
 public:
-    virtual ~Circle() = default;
+    //virtual ~Circle() = 0;
     Circle(double x, double y, double radius);
     void setRadius(double rad);
     void draw();

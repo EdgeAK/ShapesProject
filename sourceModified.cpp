@@ -19,8 +19,7 @@ using std::ofstream;
 int main()
 {
     
-    Circle C = Circle(216, 216, 216);
+    Circle C(216, 216, 216);
     C.draw();
-    Circle B = Circle(288, 288, 288);
-    B.draw();
+
 }
