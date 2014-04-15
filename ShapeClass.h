@@ -36,17 +36,14 @@ struct Box
 
 struct Scale
 {
-    double _x = 1;
-    double _y = 1;
+    double _x;
+    double _y;
 };
 
 class Shape
 {
 public:
-<<<<<<< HEAD
-=======
-    //virtual ~Shape() = default;
->>>>>>> 8d81765d4956221b17ba861b0a858159700b73ff
+
     virtual void draw() = 0;
     virtual ofstream createFile(string fileName);
     void setPoint(double x, double y);
@@ -60,7 +57,7 @@ private:
     Point _currentPoint;
     Box _boundingBox;
     Scale _shapeScale;
-    double _rotationDegree = 0;
+    double _rotationDegree;
     
 };
 
@@ -110,11 +107,7 @@ double Shape::getRotation()
 class Circle : public Shape
 {
 public:
-<<<<<<< HEAD
 
-=======
-    //virtual ~Circle() = default;
->>>>>>> 8d81765d4956221b17ba861b0a858159700b73ff
     Circle(double x, double y, double radius);
     void setRadius(double rad);
     void draw();
