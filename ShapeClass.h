@@ -34,25 +34,35 @@ struct Box
     double width;
 };
 
+struct Scale
+{
+    double _x = 1;
+    double _y = 1;
+};
 
 class Shape
 {
 public:
+<<<<<<< HEAD
+=======
+    //virtual ~Shape() = default;
+>>>>>>> 8d81765d4956221b17ba861b0a858159700b73ff
     virtual void draw() = 0;
     virtual ofstream createFile(string fileName);
     void setPoint(double x, double y);
     void setBox(double height, double width);
-    Point getCurPoint(Shape *cur);
-    //virtual void rotate(Shape &s, double degree) = 0;
-    //void scaled(Shape &s, double x, double y);
+    Point getCurPoint();
+    void scaled(double x, double y);
+    Scale getScale();
+    double getRotation();
     
 private:
     Point _currentPoint;
     Box _boundingBox;
+    Scale _shapeScale;
+    double _rotationDegree = 0;
+    
 };
-
-
-
 
 ofstream Shape::createFile(string fileName)
 {
@@ -75,20 +85,36 @@ void Shape::setBox(double height, double width)
     _boundingBox.width = width;
 }
 
-Point Shape::getCurPoint(Shape *cur)
+Point Shape::getCurPoint()
 {
     return _currentPoint;
 }
 
-//void Shape::scaled(Shape &s, double x, double y)
-//{
-//    
-//}
+
+void Shape::scaled(double x, double y)
+{
+    _shapeScale._x = x;
+    _shapeScale._y = y;
+}
+
+Scale Shape::getScale()
+{
+    return _shapeScale;
+}
+
+double Shape::getRotation()
+{
+    return _rotationDegree;
+}
 
 class Circle : public Shape
 {
 public:
+<<<<<<< HEAD
 
+=======
+    //virtual ~Circle() = default;
+>>>>>>> 8d81765d4956221b17ba861b0a858159700b73ff
     Circle(double x, double y, double radius);
     void setRadius(double rad);
     void draw();
@@ -104,12 +130,6 @@ Circle::Circle(double x, double y, double radius)
     setBox(radius*2, radius*2);
 }
 
-//void Circle::setRadius(double rad)
-//{
-//    _radius = rad;
-//    setBox(rad*2, rad*2);
-//}
-
 void Circle::draw()
 {
     string fileName;
@@ -117,7 +137,10 @@ void Circle::draw()
     cin >> fileName;
     ofstream postScriptOut = createFile(fileName + ".ps");
     
-    postScriptOut << getCurPoint(this)._x << " " << getCurPoint(this)._y << " " << _radius << " 0 360 arc closepath" << endl;
+    postScriptOut << "/circle{" << endl;
+    postScriptOut << getCurPoint()._x << " " << getCurPoint()._y << " " << _radius << " 0 360 arc closepath}" << endl;
+    postScriptOut << "def" << endl;
+    postScriptOut << getScale()._x << " " << getScale()._y << " scale circle" << endl;
     postScriptOut << "stroke" << endl;
     postScriptOut << "showpage" << endl;
     postScriptOut.close();

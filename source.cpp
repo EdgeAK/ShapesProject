@@ -1,42 +1,27 @@
+//
+//  ShapeClass.h
+//  ShapesProject
+//
+//  Created by Nicholas Mardeusz on 4/13/14.
+//  Copyright (c) 2014 Edge. All rights reserved.
+//
+
+#include "ShapeClass.h"
 #include <iostream>
 using std::cout;
+using std::endl;
+#include <memory>
+using std::shared_ptr;
+using std::make_shared;
+#include<fstream>
+using std::ofstream;
 
-struct Point
+int main()
 {
-    int _x;
-    int _y;
-};
+    Circle C = Circle(216, 216, 216);
+    C.draw();
+    C.Shape::scaled(2, 1);
+    C.draw();
 
-struct Box
-{
-    int height;
-    int width;
-};
-
-class Shape
-{
-public:
-    virtual ~Shape();
-    virtual void draw() const = 0;
-    void setPoint(double x, double y);
-private:
-    Point _currentPoint;
-    Box _boundingBox;
-};
-
-void Shape::setPoint(double x, double y):_currentPoint._x(x), _currentPoint._y(y)
-{}
-
-
-class Circle : public Shape
-{
-public:
-    void setRadius(double rad);
     
-private:
-    double _radius;
-};
-
-void Circle::setRadius(double rad):_radius(rad),_boundingBox.height(rad*2), _boundingBox.width(rad*2)
-{
 }
