@@ -38,7 +38,6 @@ struct Box
 class Shape
 {
 public:
-    //virtual ~Shape() = 0;
     virtual void draw() = 0;
     virtual ofstream createFile(string fileName);
     void setPoint(double x, double y);
@@ -89,10 +88,11 @@ Point Shape::getCurPoint(Shape *cur)
 class Circle : public Shape
 {
 public:
-    //virtual ~Circle() = 0;
+
     Circle(double x, double y, double radius);
     void setRadius(double rad);
     void draw();
+
 private:
     double _radius;
 };
