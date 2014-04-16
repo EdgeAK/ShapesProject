@@ -27,158 +27,128 @@ struct Point
     double _x;
     double _y;
 };
-
 struct Box
 {
     double height;
     double width;
 };
-
 struct Scale
 {
     double _x = 1;
     double _y = 1;
 };
 
+//Shape
 class Shape
 {
 public:
     //virtual ~Shape() = default;
-    virtual void draw(string fileName) = 0;
-    virtual ofstream createFile(string fileName);
+    virtual void draw(ofstream & postScript) = 0;
+    virtual void draw();
     void setPoint(double x, double y);
     void setBox(double height, double width);
     void scaled(double x, double y);
     void rotate(double rotDegree);
-    
-//    Point getCurPoint();
-//    Scale getScale();
-//    double getRotation();
-    
 protected:
     Point _currentPoint;
     Box _boundingBox;
     Scale _shapeScale;
     double _rotationDegree = 0;
 };
-
-ofstream Shape::createFile(string fileName)
-{
-    ofstream postScriptOut;
-    postScriptOut.open (fileName);
-    postScriptOut << "%!" << endl;
-    return postScriptOut;
-}
-
 void Shape::setPoint(double x, double y)
 {
     _currentPoint._x = x;
     _currentPoint._y = y;
 }
-
 void Shape::setBox(double height, double width)
 {
     _boundingBox.height = height;
     _boundingBox.width = width;
 }
-
 void Shape::scaled(double x, double y)
 {
     _shapeScale._x = x;
     _shapeScale._y = y;
 }
-
 void Shape::rotate(double r)
 {
     _rotationDegree = r;
 }
-
-//Point Shape::getCurPoint()
-//{
-//    return _currentPoint;
-//}
-//Scale Shape::getScale()
-//{
-//    return _shapeScale;
-//}
-//
-//double Shape::getRotation()
-//{
-//    return _rotationDegree;
-//}
-
-
-class Rectangle : public Shape
+void Shape::draw()
 {
-public:
-    Rectangle(double length, double width, Point point);
-    void draw(string fileName);
-private:
-    double length;
-    double width;
-};
-
-Rectangle::Rectangle(double l, double w, Point point)
-{
-    _currentPoint = point;
-    length = l;
-    width = w;
+    string filename;
+    cout << "Enter a file name to draw to: ";
+    getline(cin, filename);
+    ofstream postScript;
+    postScript.open(filename.c_str());
+    draw(postScript);
+    postScript.close();
 }
 
-void Rectangle::draw(string fileName)
-{
-    ofstream postScriptOut = createFile(fileName + ".ps");
-
-    postScriptOut << "/rectangle{" << endl;
-    postScriptOut << "0 0 moveto" << endl;
-    postScriptOut << width << " " << 0 << " rlineto" << endl;
-    postScriptOut << 0 << " " << length << " rlineto" << endl;
-    postScriptOut << -1*width << " " << 0 << " rlineto" << endl;
-    postScriptOut << "closepath" << endl;
-    postScriptOut << "stroke}def" << endl;
-    
-    postScriptOut << _currentPoint._x << " " << _currentPoint._y << " translate " << endl;
-    postScriptOut << "gsave" << endl;
-    postScriptOut << _rotationDegree << " rotate" << endl;
-    postScriptOut <<  _shapeScale._x << " " << _shapeScale._y << " scale rectangle" << endl;
-    postScriptOut << "grestore" << endl;
-    postScriptOut << "showpage" << endl;
-
-}
-
+//Circle
 class Circle : public Shape
 {
 public:
     Circle(double x, double y, double radius);
-    void draw(string fileName);
+    void draw(ofstream & postScript);
+    void draw();
 private:
     double _radius;
 };
-
-Circle::Circle(double x, double y, double radius)
+Circle::Circle(double x, double y, double radius) : _radius(radius)
 {
     setPoint(x, y);
-    _radius = radius;
     setBox(radius*2, radius*2);
 }
-
-void Circle::draw(string fileName)
+void Circle::draw(ofstream & postScript)
 {
-    //string fileName;
-    //cout << "Name of file: " << endl;
-    //cin >> fileName;
-    ofstream postScriptOut = createFile(fileName + ".ps");
+    postScript << "/circle{" << endl;
+    postScript << "newpath 0 0 " << _radius << " 0 360 arc closepath stroke} def" << endl;
     
-    postScriptOut << "/circle{" << endl;
-    postScriptOut << "newpath 0 0 " << _radius << " 0 360 arc closepath stroke} def" << endl;
-    
-    postScriptOut << _currentPoint._x << " " << _currentPoint._y << " translate " << endl;
-    postScriptOut << "gsave" << endl;
-    postScriptOut << _rotationDegree << " rotate" << endl;
-    postScriptOut <<  _shapeScale._x << " " << _shapeScale._y << " scale circle" << endl;
-    postScriptOut << "grestore" << endl;
-    postScriptOut << "showpage" << endl;
-    postScriptOut.close();
+    postScript << _currentPoint._x << " " << _currentPoint._y << " translate " << endl;
+    postScript << "gsave" << endl;
+    postScript << _rotationDegree << " rotate" << endl;
+    postScript <<  _shapeScale._x << " " << _shapeScale._y << " scale circle" << endl;
+    postScript << "grestore" << endl;
+    postScript << "showpage" << endl;
 }
+void Circle::draw() {Shape::draw();}
+
+//Polygon
+
+//Rectangle
+class Rectangle : public Shape
+{
+public:
+    Rectangle(double x, double y, double h, double w);
+    void draw(ofstream & postScript);
+    void draw();
+private:
+    double height;
+    double width;
+};
+Rectangle::Rectangle(double x, double y, double h, double w) : height(h), width(w)
+{
+    setPoint(x, y);
+    setBox(h, w);
+}
+void Rectangle::draw(ofstream & postScript)
+{
+    postScript << "newpath" << endl;
+    postScript << "moveto " << _currentPoint._x-(width/2) << " " << _currentPoint._y-(height/2) << endl;
+    postScript << "lineto " << _currentPoint._x+(width/2) << " " << _currentPoint._y-(height/2) << endl;
+    postScript << "lineto " << _currentPoint._x+(width/2) << " " << _currentPoint._y+(height/2) << endl;
+    postScript << "lineto " << _currentPoint._x-(width/2) << " " << _currentPoint._y+(height/2) << endl;
+    postScript << "closepath" << endl;
+    postScript << "stroke" << endl;
+    postScript << "showpage" << endl;
+}
+void Rectangle::draw() {Shape::draw();}
+
+//Spacer
+
+//Rotation
+
+//Scale
 
 #endif
