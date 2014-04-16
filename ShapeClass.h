@@ -13,308 +13,130 @@
 using std::cout;
 using std::cin;
 using std::endl;
+#include <memory>
+using std::shared_ptr;
+using std::make_shared;
 #include<fstream>
 using std::ofstream;
 #include<string>
 using std::string;
 
-struct Current_Point
+
+struct Point
 {
-    double x;
-    double y;
+    double _x;
+    double _y;
 };
-struct Bounding_Box
+
+struct Box
 {
     double height;
     double width;
 };
 
-//Base Class
-//Shape
+struct Scale
+{
+    double _x;
+    double _y;
+};
+
 class Shape
 {
 public:
-    virtual ~Shape() = default;
-    virtual void draw(ofstream & postScript) = 0;
-    void draw();
-    void set_point(double x, double y);
-    void set_box(double height, double width);
-    Bounding_Box get_box();
-    Current_Point get_point();
-protected:
-    Current_Point point;
-    Bounding_Box box;
-};
-void Shape::draw()
-{
-    string filename;
-    cout << "Enter a file name to draw to: ";
-    getline(cin, filename);
-    ofstream postScript;
-    postScript.open(filename.c_str());
-    postScript << point.x << " " << point.y << " moveto" << endl;
-    draw(postScript);
-    postScript << endl << "showpage" << endl;
-    postScript.close();
-}
-void Shape::set_point(double x, double y)
-{
-    point.x = x;
-    point.y = y;
-}
-void Shape::set_box(double height, double width)
-{
-    box.height = height;
-    box.width = width;
-}
-Bounding_Box Shape::get_box() {return box;}
-Current_Point Shape::get_point() {return point;}
 
-//Derived Classes
-//Circle
+    virtual void draw() = 0;
+    virtual ofstream createFile(string fileName);
+    void setPoint(double x, double y);
+    void setBox(double height, double width);
+    Point getCurPoint();
+    void scaled(double x, double y);
+    Scale getScale();
+    double getRotation();
+    
+private:
+    Point _currentPoint;
+    Box _boundingBox;
+    Scale _shapeScale;
+    double _rotationDegree;
+    
+};
+
+ofstream Shape::createFile(string fileName)
+{
+    ofstream postScriptOut;
+    postScriptOut.open (fileName);
+    postScriptOut << "%!" << endl;
+    postScriptOut << "newpath" << endl;
+    return postScriptOut;
+}
+
+void Shape::setPoint(double x, double y)
+{
+    _currentPoint._x = x;
+    _currentPoint._y = y;
+}
+
+void Shape::setBox(double height, double width)
+{
+    _boundingBox.height = height;
+    _boundingBox.width = width;
+}
+
+Point Shape::getCurPoint()
+{
+    return _currentPoint;
+}
+
+
+void Shape::scaled(double x, double y)
+{
+    _shapeScale._x = x;
+    _shapeScale._y = y;
+}
+
+Scale Shape::getScale()
+{
+    return _shapeScale;
+}
+
+double Shape::getRotation()
+{
+    return _rotationDegree;
+}
+
 class Circle : public Shape
 {
 public:
-    Circle(double x, double y, double r);
-    void draw(ofstream & postScript);
+
+    Circle(double x, double y, double radius);
+    void setRadius(double rad);
+    void draw();
+
 private:
-    double radius;
+    double _radius;
 };
-Circle::Circle(double x, double y, double r) : radius(r)
+
+Circle::Circle(double x, double y, double radius)
 {
-    set_point(x, y);
-    set_box(radius*2, radius*2);
-}
-void Circle::draw(ofstream & postScript)
-{
-    postScript << "newpath 0 0 " << radius << " 0 360 arc closepath stroke" << endl;
+    setPoint(x, y);
+    _radius = radius;
+    setBox(radius*2, radius*2);
 }
 
-//Polygon
-class Polygon : public Shape
+void Circle::draw()
 {
-public:
-    Polygon(unsigned sides, double length);
-    void draw(ofstream & postScript);
-private:
-    unsigned sides;
-    double length;
-};
-Polygon::Polygon(unsigned sides, double length) : sides(sides), length(length)
-{
-    //TODO calculate to determine box and point
-    set_point(0, 0);
-    set_box(0, 0);
-}
-void Polygon::draw(ofstream & postScript)
-{
-    //TODO calculate to impliment drawing
-}
-
-//Rectangle
-class Rectangle : public Shape
-{
-public:
-    Rectangle(double x, double y, double h, double w);
-    void draw(ofstream & postScript);
-private:
-    double height;
-    double width;
-};
-Rectangle::Rectangle(double x, double y, double h, double w) : height(h), width(w)
-{
-    set_point(x, y);
-    set_box(h, w);
-}
-void Rectangle::draw(ofstream & postScript)
-{
-    postScript << "newpath" << endl;
-    postScript << "moveto " << point.x-(width/2) << " " << point.y-(height/2) << endl;
-    postScript << "lineto " << point.x+(width/2) << " " << point.y-(height/2) << endl;
-    postScript << "lineto " << point.x+(width/2) << " " << point.y+(height/2) << endl;
-    postScript << "lineto " << point.x-(width/2) << " " << point.y+(height/2) << endl;
-    postScript << "closepath" << endl;
-    postScript << "stroke" << endl;
-}
-
-//Spacer
-class Spacer : public Shape
-{
-public:
-    Spacer(double x, double y, double h, double w);
-};
-Spacer::Spacer(double x, double y, double h, double w)
-{
-    set_point(x, y);
-    set_box(h, w);
-}
-
-//Decorator
-class Decorator : public Shape
-{
-public:
-    using Shape::draw;
-    virtual void decorate(ofstream & postScript) =0;
-    virtual void draw(ofstream & postScript);
-protected:
-    Shape * shape_ptr;
-};
-void Decorator::draw(ofstream & postScript)
-{
-    postScript << "gsave" << endl;
-    decorate(postScript);
-    shape_ptr->draw(postScript);
-    postScript << "grestore" << endl;
-}
-
-//Decorators
-//Rotation
-class Rotation : public Decorator
-{
-public:
-    typedef double RotationAngle;
-    Rotation(Shape & shape, RotationAngle rotation_angle);
-    void decorate(ofstream & postScript);
-private:
-    RotationAngle rotation_angle;
-};
-Rotation::Rotation(Shape & shape, RotationAngle rotation_angle) : rotation_angle(rotation_angle)
-{
-    shape_ptr = &shape;
-    if(rotation_angle==90 || rotation_angle==270) {
-        auto temp = box.height;
-        box.height = box.width;
-        box.width = temp;
-    }
-}
-void Rotation::decorate(ofstream & postScript)
-{
-    postScript << rotation_angle << " rotate" << endl;
-}
-
-//Scale
-class Scaled : public Decorator
-{
-    Scaled(Shape & shape, double fx, double fy);
-    void decorate(ofstream & postScript);
-private:
-    double scale_x;
-    double scale_y;
-};
-Scaled::Scaled(Shape & shape, double fx, double fy) : scale_x(fx), scale_y(fy)
-{
-    shape_ptr = &shape;
-    box = shape.get_box();
-}
-void Scaled::decorate(ofstream & postScript)
-{
-    postScript << scale_x << " " << scale_y << " scale" << endl;
-}
-
-//Layered
-class Layered : public Decorator
-{
-public:
-    Layered(/*TODO multiple shapes passed in here*/);
-    void draw(ofstream & postScript);
-private:
-    unsigned shapes;
-};
-Layered::Layered(/*TODO multiple shapes passed in here*/)
-{
-    //TODO Make shape_ptr into an indexable array of Shapes, using the arguments as an initialiver list..
-    box.height=0;
-    box.width=0;
-    for(auto i=0; i<shapes; ++i) {
-        box.width+=shape_ptr[i].get_box().width;
-        box.height+=shape_ptr[i].get_box().height;
-    }
-    point.x=box.width/2;
-    point.y=box.height/2;
-}
-void Layered::draw(ofstream & postScript)
-{
-    for(auto i=0; i<shapes; ++i) {
-        postScript << "gsave" << endl;
-        shape_ptr[i].draw(postScript);
-        postScript << "grestore" << endl;
-    }
-}
-
-//Vertical
-class Vertical : public Decorator
-{
-public:
-    Vertical(/*TODO multiple shapes passed in here*/);
-    void draw(ofstream & postScript);
-private:
-    unsigned shapes;
-};
-Vertical::Vertical(/*TODO multiple shapes passed in here*/)
-{
-    //TODO Make shape_ptr into an indexable array of Shapes, using the arguments as an initialiver list..
-    box.height=0;
-    box.width=0;
-    for(auto i=0; i<shapes; ++i) {
-        box.height+=shape_ptr[i].get_box().height;
-        if(shape_ptr[i].get_box().width>box.width) box.width=shape_ptr[i].get_box().width;
-    }
-    point.x=box.width/2;
-    point.y=box.height/2;
-}
-void Vertical::draw(ofstream & postScript)
-{
-    postScript << "gsave" << endl;
-    postScript << -box.width/2 << " " << 0 << " translate" << endl;
-    postScript << shape_ptr[0].get_box().width << " " << 0 << " translate" << endl;
-    for(auto i=0; i<shapes; ++i) {
-        if(i) {
-            postScript << 0 << " " << shape_ptr[i-1].get_box().height/2 << " translate" << endl;
-            postScript << 0 << " " << shape_ptr[i].get_box().height/2 << " translate" << endl;
-        }
-        postScript << "gsave" << endl;
-        shape_ptr[i].draw(postScript);
-        postScript << "grestore" << endl;
-    }
-    postScript << "grestore" << endl;
-}
-
-//Horizontal
-class Horizontal : public Decorator
-{
-public:
-    Horizontal(/*TODO multiple shapes passed in here*/);
-    void draw(ofstream & postScript);
-private:
-    unsigned shapes;
-};
-Horizontal::Horizontal(/*TODO multiple shapes passed in here*/)
-{
-    //TODO Make shape_ptr into an indexable array of Shapes, using the arguments as an initialiver list..
-    box.height=0;
-    box.width=0;
-    for(auto i=0; i<shapes; ++i) {
-        box.width+=shape_ptr[i].get_box().width;
-        if(shape_ptr[i].get_box().height>box.height) box.height=shape_ptr[i].get_box().height;
-    }
-    point.x=box.width/2;
-    point.y=box.height/2;
-}
-void Horizontal::draw(ofstream & postScript)
-{
-    postScript << "gsave" << endl;
-    postScript << 0 << " " << -box.height/2 << " translate" << endl;
-    postScript << 0 << " " << shape_ptr[0].get_box().height << " translate" << endl;
-    for(auto i=0; i<shapes; ++i) {
-        if(i) {
-            postScript << shape_ptr[i-1].get_box().height/2 << " " << 0 << " translate" << endl;
-            postScript << shape_ptr[i].get_box().height/2 << " " << 0 << " translate" << endl;
-        }
-        postScript << "gsave" << endl;
-        shape_ptr[i].draw(postScript);
-        postScript << "grestore" << endl;
-    }
-    postScript << "grestore" << endl;
+    string fileName;
+    cout << "Name of file: " << endl;
+    cin >> fileName;
+    ofstream postScriptOut = createFile(fileName + ".ps");
+    
+    postScriptOut << "/circle{" << endl;
+    postScriptOut << getCurPoint()._x << " " << getCurPoint()._y << " " << _radius << " 0 360 arc closepath}" << endl;
+    postScriptOut << "def" << endl;
+    postScriptOut << getScale()._x << " " << getScale()._y << " scale circle" << endl;
+    postScriptOut << "stroke" << endl;
+    postScriptOut << "showpage" << endl;
+    postScriptOut.close();
 }
 
 #endif
