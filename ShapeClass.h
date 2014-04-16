@@ -32,11 +32,6 @@ struct Box
     double height;
     double width;
 };
-struct Scale
-{
-    double x = 1;
-    double y = 1;
-};
 
 //Base Class
 //Shape
@@ -84,6 +79,7 @@ void Shape::draw()
     postScript.open(filename.c_str());
     postScript << _currentPoint.x << " " << _currentPoint.y << " moveto" << endl;
     draw(postScript);
+    postScript << endl << "showpage";
     postScript.close();
 }
 
@@ -113,7 +109,6 @@ void Circle::draw(ofstream & postScript)
     postScript << _rotationDegree << " rotate" << endl;
     postScript <<  _shapeScale.x << " " << _shapeScale.y << " scale circle" << endl;
     postScript << "grestore" << endl;
-    postScript << "showpage" << endl;
 }
 void Circle::draw() {Shape::draw();}
 
@@ -144,7 +139,6 @@ void Rectangle::draw(ofstream & postScript)
     postScript << "lineto " << _currentPoint.x-(width/2) << " " << _currentPoint.y+(height/2) << endl;
     postScript << "closepath" << endl;
     postScript << "stroke" << endl;
-    postScript << "showpage" << endl;
 }
 void Rectangle::draw() {Shape::draw();}
 
@@ -170,15 +164,15 @@ void Spacer::draw() {Shape::draw();}
 class Rotation : public Shape
 {
 public:
-    typedef double rotation_angle;
-    Rotation(Shape & shape, rotation_angle angle);
+    typedef double RotationAngle;
+    Rotation(Shape & shape, RotationAngle rotation_angle);
     void draw(ofstream & postScript);
     void draw();
 private:
     Shape * shape;
-    rotation_angle angle;
+    RotationAngle rotation_angle;
 };
-Rotation::Rotation(Shape & s, rotation_angle a) : shape(&s), angle(a)
+Rotation::Rotation(Shape & shape, RotationAngle rotation_angle) : shape(&s), rotation_angle(rotation_angle)
 {
     if(a==90 || a==270) {
         auto temp = _boundingBox.height;
@@ -194,5 +188,17 @@ void Rotation::draw(ofstream & postScript)
 void Rotation::draw(){Shape::draw();}
 
 //Scale
-
+class Scaled : public Shape
+{
+    Scaled(Shape & shape, double fx, double fy);
+    void draw(ofstream & postScript);
+    void draw();
+private:
+    Shape * shape;
+    double scale_x;
+    double scale_y;
+}
+Scaled(Shape & shape, double fx, double fy) : shape(&shape), 
+void draw(ofstream & postScript);
+void draw();
 #endif
