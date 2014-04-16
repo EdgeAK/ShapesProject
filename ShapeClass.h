@@ -75,19 +75,19 @@ Current_Point Shape::get_point() {return point;}
 class Circle : public Shape
 {
 public:
-    Circle(double x, double y, double radius);
+    Circle(double x, double y, double r);
     void draw(ofstream & postScript);
 private:
-    double _radius;
+    double radius;
 };
-Circle::Circle(double x, double y, double radius) : _radius(radius)
+Circle::Circle(double x, double y, double r) : radius(r)
 {
     set_point(x, y);
     set_box(radius*2, radius*2);
 }
 void Circle::draw(ofstream & postScript)
 {
-    postScript << "newpath 0 0 " << _radius << " 0 360 arc closepath stroke" << endl;
+    postScript << "newpath 0 0 " << radius << " 0 360 arc closepath stroke" << endl;
 }
 
 //Polygon
