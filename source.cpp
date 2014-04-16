@@ -18,10 +18,25 @@ using std::ofstream;
 
 int main()
 {
-    Circle C = Circle(216, 216, 216);
-    C.draw();
-    C.Shape::scaled(2, 1);
-    C.draw();
+    Circle C = Circle(216, 216, 72);
+    C.draw("circle");
+    
+    C.scaled(3, 1);
+    C.draw("scaled");
 
+    C.rotate(90);
+    C.draw("rotated");
+    
+    Point p;
+    p._x = 72;
+    p._y = 72;
+    Rectangle R = Rectangle(72, 144, p);
+    R.draw("rectangle");
+    
+    R.scaled(3, 1);
+    R.draw("scaled");
+    
+    R.rotate(90);
+    R.draw("rotated");
     
 }
