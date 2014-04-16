@@ -91,7 +91,11 @@ void Circle::draw(ofstream & postScript)
 }
 
 //Polygon
-//TODO
+class Polygon : public Shape
+{
+    Polygon(double sides, double length);
+    void draw(ofstream & postScript);
+}
 
 //Rectangle
 class Rectangle : public Shape
