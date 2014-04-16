@@ -146,6 +146,21 @@ void Rectangle::draw(ofstream & postScript)
 void Rectangle::draw() {Shape::draw();}
 
 //Spacer
+class Spacer : public Shape
+{
+public:
+    Spacer(double x, double y, double h, double w);
+    void draw(ofstream & postScript);
+    void draw();
+private:
+};
+Spacer::Spacer(double x, double y, double h, double w)
+{
+    setPoint(x, y);
+    setBox(h, w);
+}
+void Spacer::draw(ofstream & postScript) {}
+void Spacer::draw() {Shape::draw();}
 
 //Rotation
 
