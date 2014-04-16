@@ -45,18 +45,6 @@ protected:
     Current_Point point;
     Bounding_Box box;
 };
-void Shape::set_point(double x, double y)
-{
-    point.x = x;
-    point.y = y;
-}
-void Shape::set_box(double height, double width)
-{
-    box.height = height;
-    box.width = width;
-}
-Bounding_Box Shape::get_box() {return box;}
-Current_Point Shape::get_point() {return point;}
 void Shape::draw()
 {
     string filename;
@@ -69,6 +57,18 @@ void Shape::draw()
     postScript << endl << "showpage" << endl;
     postScript.close();
 }
+void Shape::set_point(double x, double y)
+{
+    point.x = x;
+    point.y = y;
+}
+void Shape::set_box(double height, double width)
+{
+    box.height = height;
+    box.width = width;
+}
+Bounding_Box Shape::get_box() {return box;}
+Current_Point Shape::get_point() {return point;}
 
 //Derived Classes
 //Circle
@@ -93,8 +93,22 @@ void Circle::draw(ofstream & postScript)
 //Polygon
 class Polygon : public Shape
 {
-    Polygon(double sides, double length);
+public:
+    Polygon(unsigned sides, double length);
     void draw(ofstream & postScript);
+private:
+    unsigned sides;
+    double length;
+};
+Polygon::Polygon(unsigned sides, double length) : sides(sides), length(length)
+{
+    //TODO
+    set_point(0, 0);
+    set_box(0, 0);
+}
+void Polygon::draw(ofstream & postScript)
+{
+    //TODO need to impliment drawing
 }
 
 //Rectangle
