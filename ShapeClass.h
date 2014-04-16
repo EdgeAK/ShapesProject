@@ -34,7 +34,7 @@ struct Bounding_Box
 class Shape
 {
 public:
-    //virtual ~Shape() = default;
+    virtual ~Shape() = default;
     virtual void draw(ofstream & postScript) = 0;
     virtual void draw();
     void set_point(double x, double y);
@@ -90,7 +90,7 @@ void Circle::draw(ofstream & postScript)
 {
     postScript << "newpath 0 0 " << _radius << " 0 360 arc closepath stroke" << endl;
 }
-void Circle::draw() {Shape::draw();}
+void Circle::draw(){Shape::draw();}
 
 //Polygon
 //TODO
@@ -121,7 +121,7 @@ void Rectangle::draw(ofstream & postScript)
     postScript << "closepath" << endl;
     postScript << "stroke" << endl;
 }
-void Rectangle::draw() {Shape::draw();}
+void Rectangle::draw(){Shape::draw();}
 
 //Spacer
 class Spacer : public Shape
@@ -137,64 +137,81 @@ Spacer::Spacer(double x, double y, double h, double w)
     set_box(h, w);
 }
 void Spacer::draw(ofstream & postScript) {}
-void Spacer::draw() {Shape::draw();}
+void Spacer::draw(){Shape::draw();}
 
 //Decorators
+class Decorator : public Shape
+{
+public:
+    virtual void decorate(ofstream & postScript) =0;
+    virtual void draw(ofstream & postScript);
+protected:
+    Shape * shapes;
+};
+void Decorator::draw(ofstream & postScript)
+{
+    postScript << "gsave" << endl;
+    decorate(postScript);
+    shapes->draw(postScript);
+    postScript << "grestore" << endl;
+}
+
 //Rotation
-class Rotation : public Shape
+class Rotation : public Decorator
 {
 public:
     typedef double RotationAngle;
     Rotation(Shape & shape, RotationAngle rotation_angle);
+    void decorate(ofstream & postScript);
     void draw(ofstream & postScript);
     void draw();
 private:
-    Shape * shape;
     RotationAngle rotation_angle;
 };
-Rotation::Rotation(Shape & shape, RotationAngle rotation_angle) : shape(&shape), rotation_angle(rotation_angle)
+Rotation::Rotation(Shape & shape, RotationAngle rotation_angle) : rotation_angle(rotation_angle)
 {
+    shapes = &shape;
     if(rotation_angle==90 || rotation_angle==270) {
         auto temp = box.height;
         box.height = box.width;
         box.width = temp;
     }
 }
-void Rotation::draw(ofstream & postScript)
+void Rotation::decorate(ofstream & postScript)
 {
-    postScript << "gsave" << endl;
     postScript << rotation_angle << " rotate" << endl;
-    shape->draw(postScript);
-    postScript << "grestore" << endl;
 }
+void Rotation::draw(ofstream & postScript){Decorator::draw(postScript);}
 void Rotation::draw(){Shape::draw();}
 
 //Scale
-class Scaled : public Shape
+class Scaled : public Decorator
 {
     Scaled(Shape & shape, double fx, double fy);
+    void decorate(ofstream & postScript);
     void draw(ofstream & postScript);
     void draw();
 private:
-    Shape * shape;
     double scale_x;
     double scale_y;
 };
-Scaled::Scaled(Shape & shape, double fx, double fy) : shape(&shape), scale_x(fx), scale_y(fy)
+Scaled::Scaled(Shape & shape, double fx, double fy) : scale_x(fx), scale_y(fy)
 {
+    shapes = &shape;
     box = shape.get_box();
 }
-void Scaled::draw(ofstream & postScript)
+void Scaled::decorate(ofstream & postScript)
 {
-    postScript << "gsave" << endl;
     postScript << scale_x << " " << scale_y << " scale" << endl;
-    shape->draw(postScript);
-    postScript << "grestore" << endl;
 }
+void Scaled::draw(ofstream & postScript){Decorator::draw(postScript);}
 void Scaled::draw(){Shape::draw();}
 
 //Layered
-//TODO
+class Layered : public Decorator
+{
+    
+};
 
 //Vertical
 //TODO
