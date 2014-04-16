@@ -102,13 +102,13 @@ private:
 };
 Polygon::Polygon(unsigned sides, double length) : sides(sides), length(length)
 {
-    //TODO
+    //TODO calculate to determine box and point
     set_point(0, 0);
     set_box(0, 0);
 }
 void Polygon::draw(ofstream & postScript)
 {
-    //TODO need to impliment drawing
+    //TODO calculate to impliment drawing
 }
 
 //Rectangle
