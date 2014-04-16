@@ -13,21 +13,17 @@
 using std::cout;
 using std::cin;
 using std::endl;
-#include <memory>
-using std::shared_ptr;
-using std::make_shared;
 #include<fstream>
 using std::ofstream;
 #include<string>
 using std::string;
 
-
-struct Point
+struct Current_Point
 {
     double x;
     double y;
 };
-struct Box
+struct Bounding_Box
 {
     double height;
     double width;
@@ -41,35 +37,26 @@ public:
     //virtual ~Shape() = default;
     virtual void draw(ofstream & postScript) = 0;
     virtual void draw();
-    void setPoint(double x, double y);
-    void setBox(double height, double width);
-    void scaled(double x, double y);
-    void rotate(double rotDegree);
+    void set_point(double x, double y);
+    void set_box(double height, double width);
+    Bounding_Box get_box();
+    Current_Point get_point();
 protected:
-    Point _currentPoint;
-    Box _boundingBox;
-    Scale _shapeScale;
-    double _rotationDegree = 0;
+    Current_Point point;
+    Bounding_Box box;
 };
-void Shape::setPoint(double x, double y)
+void Shape::set_point(double x, double y)
 {
-    _currentPoint.x = x;
-    _currentPoint.y = y;
+    point.x = x;
+    point.y = y;
 }
-void Shape::setBox(double height, double width)
+void Shape::set_box(double height, double width)
 {
-    _boundingBox.height = height;
-    _boundingBox.width = width;
+    box.height = height;
+    box.width = width;
 }
-void Shape::scaled(double x, double y)
-{
-    _shapeScale.x = x;
-    _shapeScale.y = y;
-}
-void Shape::rotate(double r)
-{
-    _rotationDegree = r;
-}
+Bounding_Box Shape::get_box() {return box;}
+Current_Point Shape::get_point() {return point;}
 void Shape::draw()
 {
     string filename;
@@ -77,9 +64,9 @@ void Shape::draw()
     getline(cin, filename);
     ofstream postScript;
     postScript.open(filename.c_str());
-    postScript << _currentPoint.x << " " << _currentPoint.y << " moveto" << endl;
+    postScript << point.x << " " << point.y << " moveto" << endl;
     draw(postScript);
-    postScript << endl << "showpage";
+    postScript << endl << "showpage" << endl;
     postScript.close();
 }
 
@@ -96,23 +83,17 @@ private:
 };
 Circle::Circle(double x, double y, double radius) : _radius(radius)
 {
-    setPoint(x, y);
-    setBox(radius*2, radius*2);
+    set_point(x, y);
+    set_box(radius*2, radius*2);
 }
 void Circle::draw(ofstream & postScript)
 {
-    postScript << "/circle{" << endl;
-    postScript << "newpath 0 0 " << _radius << " 0 360 arc closepath stroke} def" << endl;
-    
-    postScript << _currentPoint.x << " " << _currentPoint.y << " translate " << endl;
-    postScript << "gsave" << endl;
-    postScript << _rotationDegree << " rotate" << endl;
-    postScript <<  _shapeScale.x << " " << _shapeScale.y << " scale circle" << endl;
-    postScript << "grestore" << endl;
+    postScript << "newpath 0 0 " << _radius << " 0 360 arc closepath stroke" << endl;
 }
 void Circle::draw() {Shape::draw();}
 
 //Polygon
+//TODO
 
 //Rectangle
 class Rectangle : public Shape
@@ -127,16 +108,16 @@ private:
 };
 Rectangle::Rectangle(double x, double y, double h, double w) : height(h), width(w)
 {
-    setPoint(x, y);
-    setBox(h, w);
+    set_point(x, y);
+    set_box(h, w);
 }
 void Rectangle::draw(ofstream & postScript)
 {
     postScript << "newpath" << endl;
-    postScript << "moveto " << _currentPoint.x-(width/2) << " " << _currentPoint.y-(height/2) << endl;
-    postScript << "lineto " << _currentPoint.x+(width/2) << " " << _currentPoint.y-(height/2) << endl;
-    postScript << "lineto " << _currentPoint.x+(width/2) << " " << _currentPoint.y+(height/2) << endl;
-    postScript << "lineto " << _currentPoint.x-(width/2) << " " << _currentPoint.y+(height/2) << endl;
+    postScript << "moveto " << point.x-(width/2) << " " << point.y-(height/2) << endl;
+    postScript << "lineto " << point.x+(width/2) << " " << point.y-(height/2) << endl;
+    postScript << "lineto " << point.x+(width/2) << " " << point.y+(height/2) << endl;
+    postScript << "lineto " << point.x-(width/2) << " " << point.y+(height/2) << endl;
     postScript << "closepath" << endl;
     postScript << "stroke" << endl;
 }
@@ -149,12 +130,11 @@ public:
     Spacer(double x, double y, double h, double w);
     void draw(ofstream & postScript);
     void draw();
-private:
 };
 Spacer::Spacer(double x, double y, double h, double w)
 {
-    setPoint(x, y);
-    setBox(h, w);
+    set_point(x, y);
+    set_box(h, w);
 }
 void Spacer::draw(ofstream & postScript) {}
 void Spacer::draw() {Shape::draw();}
@@ -172,18 +152,20 @@ private:
     Shape * shape;
     RotationAngle rotation_angle;
 };
-Rotation::Rotation(Shape & shape, RotationAngle rotation_angle) : shape(&s), rotation_angle(rotation_angle)
+Rotation::Rotation(Shape & shape, RotationAngle rotation_angle) : shape(&shape), rotation_angle(rotation_angle)
 {
-    if(a==90 || a==270) {
-        auto temp = _boundingBox.height;
-        _boundingBox.height = _boundingBox.width;
-        _boundingBox.width = temp;
+    if(rotation_angle==90 || rotation_angle==270) {
+        auto temp = box.height;
+        box.height = box.width;
+        box.width = temp;
     }
 }
 void Rotation::draw(ofstream & postScript)
 {
-    postScript << angle << " rotate" << endl;
+    postScript << "gsave" << endl;
+    postScript << rotation_angle << " rotate" << endl;
     shape->draw(postScript);
+    postScript << "grestore" << endl;
 }
 void Rotation::draw(){Shape::draw();}
 
@@ -197,8 +179,27 @@ private:
     Shape * shape;
     double scale_x;
     double scale_y;
+};
+Scaled::Scaled(Shape & shape, double fx, double fy) : shape(&shape), scale_x(fx), scale_y(fy)
+{
+    box = shape.get_box();
 }
-Scaled(Shape & shape, double fx, double fy) : shape(&shape), 
-void draw(ofstream & postScript);
-void draw();
+void Scaled::draw(ofstream & postScript)
+{
+    postScript << "gsave" << endl;
+    postScript << scale_x << " " << scale_y << " scale" << endl;
+    shape->draw(postScript);
+    postScript << "grestore" << endl;
+}
+void Scaled::draw(){Shape::draw();}
+
+//Layered
+//TODO
+
+//Vertical
+//TODO
+
+//Horizontal
+//TODO
+
 #endif
