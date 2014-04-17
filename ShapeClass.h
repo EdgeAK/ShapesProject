@@ -92,6 +92,7 @@ void Shape::draw(const string & filename, double x, double y)
     ofstream postScript;
     postScript.open(filename.c_str());
     set_point(x, y);
+    postScript << "%!" << endl;
     draw(postScript);
     postScript << endl << "showpage" << endl;
     postScript.close();
@@ -223,8 +224,8 @@ Decorator::~Decorator() throw() {} //TODO ask Hartman why this is necessary
 void Decorator::draw(ofstream & postScript)
 {
     postScript << "gsave" << endl;
-    decorate(postScript);
     shape_ptr->set_point(point.x, point.y);
+    decorate(postScript);
     shape_ptr->draw(postScript);
     postScript << "grestore" << endl;
 }
@@ -273,6 +274,7 @@ Scaled::Scaled(unique_ptr<Shape> shape, double fx, double fy) : scale_x(fx), sca
 void Scaled::decorate(ofstream & postScript)
 {
     postScript << scale_x << " " << scale_y << " scale" << endl;
+	shape_ptr.get()->set_point((shape_ptr.get()->get_point().x)/scale_x, (shape_ptr.get()->get_point().y)/scale_y);
 }
 
 //Layered
