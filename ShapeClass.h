@@ -130,6 +130,7 @@ public:
 };
 Rectangle::Rectangle(double h, double w)
 {
+    set_point(0, 0);
     set_box(h, w);
 }
 Rectangle::Rectangle(double x, double y, double h, double w)
@@ -152,8 +153,14 @@ void Rectangle::draw(ofstream & postScript)
 class Spacer : public Shape
 {
 public:
+    Spacer(double h, double w);
     Spacer(double x, double y, double h, double w);
 };
+Spacer::Spacer(double h, double w)
+{
+    set_point(0, 0);
+    set_box(h, w);
+}
 Spacer::Spacer(double x, double y, double h, double w)
 {
     set_point(x, y);
