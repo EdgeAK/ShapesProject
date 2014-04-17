@@ -16,21 +16,21 @@ void rectangle_test()
     shape->draw(shape_name, 100, 100);
 
     shape = make_shared<Rectangle>(50, 40);
-    rotation =  make_shared<Rotation>(shape, 90);
+    rotation = make_shared<Rotation>(shape, 90);
     rotation->draw("rotated_"+shape_name, 100, 100);
 
     shape = make_shared<Rectangle>(50, 40);
-    scaled =    make_shared<Scaled>(shape, 2, 3);
+    scaled = make_shared<Scaled>(shape, 2, 3);
     scaled->draw("scaled_"+shape_name, 300, 300);
 
     shape = make_shared<Rectangle>(50, 40);
-    scaled =    make_shared<Scaled>(shape, 2, 3);
-    rotation =  make_shared<Rotation>(scaled, 90);
+    scaled = make_shared<Scaled>(shape, 2, 3);
+    rotation = make_shared<Rotation>(scaled, 90);
     rotation->draw("scaled_rotated_"+shape_name, 300, 300);
 
     shape = make_shared<Rectangle>(50, 40);
-    rotation =  make_shared<Rotation>(shape, 90);
-    scaled =    make_shared<Scaled>(rotation, 2, 3);
+    rotation = make_shared<Rotation>(shape, 90);
+    scaled = make_shared<Scaled>(rotation, 2, 3);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
 void circle_test()
@@ -45,21 +45,21 @@ void circle_test()
     shape->draw(shape_name, 100, 100);
 
     shape = make_shared<Circle>(50);
-    rotation =  make_shared<Rotation>(shape, 90);
+    rotation = make_shared<Rotation>(shape, 90);
     rotation->draw("rotated_"+shape_name, 100, 100);
 
     shape = make_shared<Circle>(50);
-    scaled =    make_shared<Scaled>(shape, 2, 3);
+    scaled = make_shared<Scaled>(shape, 2, 3);
     scaled->draw("scaled_"+shape_name, 300, 300);
 
     shape = make_shared<Circle>(50);
-    scaled =    make_shared<Scaled>(shape, 2, 3);
-    rotation =  make_shared<Rotation>(scaled, 90);
+    scaled = make_shared<Scaled>(shape, 2, 3);
+    rotation = make_shared<Rotation>(scaled, 90);
     rotation->draw("scaled_rotated_"+shape_name, 300, 300);
 
     shape = make_shared<Circle>(50);
-    rotation =  make_shared<Rotation>(shape, 90);
-    scaled =    make_shared<Scaled>(rotation, 2, 3);
+    rotation = make_shared<Rotation>(shape, 90);
+    scaled = make_shared<Scaled>(rotation, 2, 3);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
 void spacer_test()
@@ -74,21 +74,21 @@ void spacer_test()
     shape->draw(shape_name, 100, 100);
 
     shape = make_shared<Spacer>(50, 40);
-    rotation =  make_shared<Rotation>(shape, 90);
+    rotation = make_shared<Rotation>(shape, 90);
     rotation->draw("rotated_"+shape_name, 100, 100);
 
     shape = make_shared<Spacer>(50, 40);
-    scaled =    make_shared<Scaled>(shape, 2, 3);
+    scaled = make_shared<Scaled>(shape, 2, 3);
     scaled->draw("scaled_"+shape_name, 300, 300);
 
     shape = make_shared<Spacer>(50, 40);
-    scaled =    make_shared<Scaled>(shape, 2, 3);
-    rotation =  make_shared<Rotation>(scaled, 90);
+    scaled = make_shared<Scaled>(shape, 2, 3);
+    rotation = make_shared<Rotation>(scaled, 90);
     rotation->draw("scaled_rotated_"+shape_name, 300, 300);
 
     shape = make_shared<Spacer>(50, 40);
-    rotation =  make_shared<Rotation>(shape, 90);
-    scaled =    make_shared<Scaled>(rotation, 2, 3);
+    rotation = make_shared<Rotation>(shape, 90);
+    scaled = make_shared<Scaled>(rotation, 2, 3);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
 
