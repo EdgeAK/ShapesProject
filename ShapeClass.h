@@ -146,12 +146,30 @@ public:
     Polygon(double x, double y, double edgeLength, int numberOfEdges);
     void setEdgeLength(double length);
 	void setNumberOfEdges(int numberOfEdges);
+	void determineBox(double edgeLength, int numberOfEdges);
     void draw();
 
 private:
-    double _length;
+    double _edgeLength;
 	int _numberOfEdges;
 };
 
+Polygon::Polygon(double x, double y, double edgeLength, int numberOfEdges)
+{
+    setPoint(x, y);
+    _edgeLength = edgeLength;
+	_numberOfEdges = numberOfEdges;
+}
+
+void determineBox(double edgeLength, int numberOfEdges)
+{
+
+
+}
+
+void Polygon::draw()
+{
+
+}
 
 #endif
