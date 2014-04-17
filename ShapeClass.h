@@ -139,4 +139,19 @@ void Circle::draw()
     postScriptOut.close();
 }
 
+class Polygon : public Shape
+{
+public:
+
+    Polygon(double x, double y, double edgeLength, int numberOfEdges);
+    void setEdgeLength(double length);
+	void setNumberOfEdges(int numberOfEdges);
+    void draw();
+
+private:
+    double _length;
+	int _numberOfEdges;
+};
+
+
 #endif
