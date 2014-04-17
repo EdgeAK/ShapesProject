@@ -52,7 +52,7 @@ void Shape::draw()
     getline(cin, filename);
     ofstream postScript;
     postScript.open(filename.c_str());
-    postScript << point.x << " " << point.y << " moveto" << endl;
+    postScript << point.x << " " << point.y << " translate" << endl;
     draw(postScript);
     postScript << endl << "showpage" << endl;
     postScript.close();
