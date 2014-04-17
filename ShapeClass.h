@@ -87,7 +87,10 @@ Circle::Circle(double x, double y, double r) : radius(r)
 }
 void Circle::draw(ofstream & postScript)
 {
-    postScript << "newpath 0 0 " << radius << " 0 360 arc closepath stroke" << endl;
+    postScript << "newpath" << endl;
+    postScript << "0 0 " << radius << " 0 360 arc" << endl;
+    postScript << "closepath" << endl;
+    postScript << "stroke" << endl;
 }
 
 //Polygon
