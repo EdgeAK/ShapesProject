@@ -61,7 +61,7 @@ void Shape::draw()
     getline(cin, filename);
     ofstream postScript;
     postScript.open(filename.c_str());
-    postScript << point.x << " " << point.y << " translate" << endl;
+    postScript << "%!" << endl;
     draw(postScript);
     postScript << endl << "showpage" << endl;
     postScript.close();
@@ -73,7 +73,8 @@ void Shape::draw(double x, double y)
     getline(cin, filename);
     ofstream postScript;
     postScript.open(filename.c_str());
-    postScript << x << " " << y << " translate" << endl;
+    set_point(x, y);
+    postScript << "%!" << endl;
     draw(postScript);
     postScript << endl << "showpage" << endl;
     postScript.close();
@@ -82,7 +83,7 @@ void Shape::draw(const string & filename)
 {
     ofstream postScript;
     postScript.open(filename.c_str());
-    postScript << point.x << " " << point.y << " translate" << endl;
+    postScript << "%!" << endl;
     draw(postScript);
     postScript << endl << "showpage" << endl;
     postScript.close();
@@ -254,6 +255,7 @@ Rotation::Rotation(unique_ptr<Shape> shape, RotationAngle rotation_angle) : rota
 void Rotation::decorate(ofstream & postScript)
 {
     postScript << rotation_angle << " rotate" << endl;
+    shape_ptr.get()->set_point((shape_ptr.get()->get_point().y), -(shape_ptr.get()->get_point().x));
 }
 
 //Scale
