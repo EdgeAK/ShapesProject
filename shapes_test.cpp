@@ -3,7 +3,6 @@ using std::make_shared;
 using std::shared_ptr;
 #include "ShapeClass.h"
 
-
 void rectangle_test()
 {
     shared_ptr<Shape> shape = make_shared<Rectangle>(50, 40);
