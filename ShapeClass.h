@@ -35,8 +35,13 @@ class Shape
 {
 public:
     virtual ~Shape() = default;
+
     virtual void draw(ofstream & postScript) = 0;
     void draw();
+    void draw(double x, double y);
+    void draw(const string & filename);
+    void draw(const string & filename, double x, double y);
+
     void set_point(double x, double y);
     void set_box(double height, double width);
     Bounding_Box get_box();
@@ -53,6 +58,36 @@ void Shape::draw()
     ofstream postScript;
     postScript.open(filename.c_str());
     postScript << point.x << " " << point.y << " translate" << endl;
+    draw(postScript);
+    postScript << endl << "showpage" << endl;
+    postScript.close();
+}
+void Shape::draw(double x, double y)
+{
+    string filename;
+    cout << "Enter a file name to draw to: ";
+    getline(cin, filename);
+    ofstream postScript;
+    postScript.open(filename.c_str());
+    postScript << x << " " << y << " translate" << endl;
+    draw(postScript);
+    postScript << endl << "showpage" << endl;
+    postScript.close();
+}
+void Shape::draw(const string & filename)
+{
+    ofstream postScript;
+    postScript.open(filename.c_str());
+    postScript << point.x << " " << point.y << " translate" << endl;
+    draw(postScript);
+    postScript << endl << "showpage" << endl;
+    postScript.close();
+}
+void Shape::draw(const string & filename, double x, double y)
+{
+    ofstream postScript;
+    postScript.open(filename.c_str());
+    postScript << x << " " << y << " translate" << endl;
     draw(postScript);
     postScript << endl << "showpage" << endl;
     postScript.close();
@@ -155,6 +190,7 @@ class Spacer : public Shape
 public:
     Spacer(double h, double w);
     Spacer(double x, double y, double h, double w);
+    void draw(ofstream & postScript);
 };
 Spacer::Spacer(double h, double w)
 {
@@ -166,6 +202,7 @@ Spacer::Spacer(double x, double y, double h, double w)
     set_point(x, y);
     set_box(h, w);
 }
+void Spacer::draw(ofstream & postScript) {}
 
 //Decorator
 class Decorator : public Shape
