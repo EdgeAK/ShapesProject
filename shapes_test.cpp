@@ -19,8 +19,8 @@ void shape_test(const pair<shared_ptr<Shape>, string> & test_shape)
     shared_ptr<Shape> shape = test_shape.first;
     string shape_name = test_shape.second+".ps";
 
-    shared_ptr<Shape> rotation =  make_shared<Rotation>(shape, 90);
-    shared_ptr<Shape> scaled =    make_shared<Scaled>(shape, 2, 3);
+    shared_ptr<Shape> rotation = make_shared<Rotation>(shape, 90);
+    shared_ptr<Shape> scaled = make_shared<Scaled>(shape, 2, 3);
 
     shape = make_shared<Rectangle>(50, 40);
     shape->draw(shape_name, 100, 100);
