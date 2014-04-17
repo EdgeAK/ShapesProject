@@ -210,14 +210,14 @@ void Spacer::draw(ofstream & postScript) {}
 class Decorator : public Shape
 {
 public:
-    virtual ~Decorator();
+    virtual ~Decorator() throw(); //TODO ask Hartman why this is necessary
     using Shape::draw;
     virtual void decorate(ofstream & postScript) =0;
     virtual void draw(ofstream & postScript);
 protected:
     Shape * shape_ptr;
 };
-Decorator::~Decorator()
+Decorator::~Decorator() throw() //TODO ask Hartman why this is necessary
 {
     delete shape_ptr;
 }
