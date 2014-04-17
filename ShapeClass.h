@@ -75,11 +75,17 @@ Current_Point Shape::get_point() {return point;}
 class Circle : public Shape
 {
 public:
+    Circle(double r);
     Circle(double x, double y, double r);
     void draw(ofstream & postScript);
 private:
     double radius;
 };
+Circle::Circle(double r) : radius(r)
+{
+    set_point(0, 0);
+    set_box(radius*2, radius*2);
+}
 Circle::Circle(double x, double y, double r) : radius(r)
 {
     set_point(x, y);
@@ -118,13 +124,15 @@ void Polygon::draw(ofstream & postScript)
 class Rectangle : public Shape
 {
 public:
+    Rectangle(double h, double w);
     Rectangle(double x, double y, double h, double w);
     void draw(ofstream & postScript);
-private:
-    double height;
-    double width;
 };
-Rectangle::Rectangle(double x, double y, double h, double w) : height(h), width(w)
+Rectangle::Rectangle(double h, double w)
+{
+    set_box(h, w);
+}
+Rectangle::Rectangle(double x, double y, double h, double w)
 {
     set_point(x, y);
     set_box(h, w);
@@ -132,10 +140,10 @@ Rectangle::Rectangle(double x, double y, double h, double w) : height(h), width(
 void Rectangle::draw(ofstream & postScript)
 {
     postScript << "newpath" << endl;
-    postScript << "moveto " << point.x-(width/2) << " " << point.y-(height/2) << endl;
-    postScript << "lineto " << point.x+(width/2) << " " << point.y-(height/2) << endl;
-    postScript << "lineto " << point.x+(width/2) << " " << point.y+(height/2) << endl;
-    postScript << "lineto " << point.x-(width/2) << " " << point.y+(height/2) << endl;
+    postScript << "moveto " << point.x-(box.width/2) << " " << point.y-(box.height/2) << endl;
+    postScript << "lineto " << point.x+(box.width/2) << " " << point.y-(box.height/2) << endl;
+    postScript << "lineto " << point.x+(box.width/2) << " " << point.y+(box.height/2) << endl;
+    postScript << "lineto " << point.x-(box.width/2) << " " << point.y+(box.height/2) << endl;
     postScript << "closepath" << endl;
     postScript << "stroke" << endl;
 }
