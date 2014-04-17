@@ -16,26 +16,27 @@ void rectangle_test()
     unique_ptr<Shape> shape = make_unique<Rectangle>(50, 40);
     unique_ptr<Shape> rotation = make_unique<Rotation>(move(shape), 90);
                       shape = make_unique<Rectangle>(50, 40);
-    unique_ptr<Shape> scaled = make_unique<Scaled>(move(shape), 2, 3);
+    unique_ptr<Shape> scaled = make_unique<Scaled>(move(shape), .5, 2);
+
     shape = make_unique<Rectangle>(50, 40);
-    shape->draw(shape_name, 100, 100);
+    shape->draw(shape_name, 300, 300);
     auto dump_ptr = move(shape);
 
     shape = make_unique<Rectangle>(50, 40);
     rotation = make_unique<Rotation>(move(shape), 90);
-    rotation->draw("rotated_"+shape_name, 100, 100);
+    rotation->draw("rotated_"+shape_name, 300, 300);
     shape = make_unique<Rectangle>(50, 40);
-    scaled = make_unique<Scaled>(move(shape), 2, 3);
+    scaled = make_unique<Scaled>(move(shape), .5, 2);
     scaled->draw("scaled_"+shape_name, 300, 300);
 
     shape = make_unique<Rectangle>(50, 40);
-    scaled = make_unique<Scaled>(move(shape), 2, 3);
+    scaled = make_unique<Scaled>(move(shape), .5, 2);
     rotation = make_unique<Rotation>(move(scaled), 90);
     rotation->draw("scaled_rotated_"+shape_name, 300, 300);
 
     shape = make_unique<Rectangle>(50, 40);
     rotation = make_unique<Rotation>(move(shape), 90);
-    scaled = make_unique<Scaled>(move(rotation), 2, 3);
+    scaled = make_unique<Scaled>(move(rotation), .5, 2);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
 void circle_test()
@@ -44,27 +45,27 @@ void circle_test()
     unique_ptr<Shape> shape = make_unique<Circle>(50);
     unique_ptr<Shape> rotation = make_unique<Rotation>(move(shape), 90);
                       shape = make_unique<Circle>(50);
-    unique_ptr<Shape> scaled = make_unique<Scaled>(move(shape), 2, 3);
+    unique_ptr<Shape> scaled = make_unique<Scaled>(move(shape), .5, 2);
 
     shape = make_unique<Circle>(50);
-    shape->draw(shape_name, 100, 100);
+    shape->draw(shape_name, 300, 300);
 
     shape = make_unique<Circle>(50);
     rotation = make_unique<Rotation>(move(shape), 90);
-    rotation->draw("rotated_"+shape_name, 100, 100);
+    rotation->draw("rotated_"+shape_name, 300, 300);
 
     shape = make_unique<Circle>(50);
-    scaled = make_unique<Scaled>(move(shape), 2, 3);
+    scaled = make_unique<Scaled>(move(shape), .5, 2);
     scaled->draw("scaled_"+shape_name, 300, 300);
 
     shape = make_unique<Circle>(50);
-    scaled = make_unique<Scaled>(move(shape), 2, 3);
+    scaled = make_unique<Scaled>(move(shape), .5, 2);
     rotation = make_unique<Rotation>(move(scaled), 90);
     rotation->draw("scaled_rotated_"+shape_name, 300, 300);
 
     shape = make_unique<Circle>(50);
     rotation = make_unique<Rotation>(move(shape), 90);
-    scaled = make_unique<Scaled>(move(rotation), 2, 3);
+    scaled = make_unique<Scaled>(move(rotation), .5, 2);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
 void spacer_test()
@@ -73,27 +74,27 @@ void spacer_test()
     unique_ptr<Shape> shape = make_unique<Spacer>(50, 40);
     unique_ptr<Shape> rotation = make_unique<Rotation>(move(shape), 90);
                       shape = make_unique<Spacer>(50, 40);
-    unique_ptr<Shape> scaled = make_unique<Scaled>(move(shape), 2, 3);
+    unique_ptr<Shape> scaled = make_unique<Scaled>(move(shape), .5, 2);
 
     shape = make_unique<Spacer>(50, 40);
-    shape->draw(shape_name, 100, 100);
+    shape->draw(shape_name, 300, 300);
 
     shape = make_unique<Spacer>(50, 40);
     rotation = make_unique<Rotation>(move(shape), 90);
-    rotation->draw("rotated_"+shape_name, 100, 100);
+    rotation->draw("rotated_"+shape_name, 300, 300);
 
     shape = make_unique<Spacer>(50, 40);
-    scaled = make_unique<Scaled>(move(shape), 2, 3);
+    scaled = make_unique<Scaled>(move(shape), .5, 2);
     scaled->draw("scaled_"+shape_name, 300, 300);
 
     shape = make_unique<Spacer>(50, 40);
-    scaled = make_unique<Scaled>(move(shape), 2, 3);
+    scaled = make_unique<Scaled>(move(shape), .5, 2);
     rotation = make_unique<Rotation>(move(scaled), 90);
     rotation->draw("scaled_rotated_"+shape_name, 300, 300);
 
     shape = make_unique<Spacer>(50, 40);
     rotation = make_unique<Rotation>(move(shape), 90);
-    scaled = make_unique<Scaled>(move(rotation), 2, 3);
+    scaled = make_unique<Scaled>(move(rotation), .5, 2);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
 

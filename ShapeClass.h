@@ -91,7 +91,7 @@ void Shape::draw(const string & filename, double x, double y)
 {
     ofstream postScript;
     postScript.open(filename.c_str());
-    postScript << x << " " << y << " translate" << endl;
+    set_point(x, y);
     draw(postScript);
     postScript << endl << "showpage" << endl;
     postScript.close();
@@ -133,7 +133,7 @@ Circle::Circle(double x, double y, double r) : radius(r)
 void Circle::draw(ofstream & postScript)
 {
     postScript << "newpath" << endl;
-    postScript << "0 0 " << radius << " 0 360 arc" << endl;
+    postScript << point.x << " " << point.y << " " << radius << " 0 360 arc" << endl;
     postScript << "closepath" << endl;
     postScript << "stroke" << endl;
 }
@@ -180,10 +180,10 @@ Rectangle::Rectangle(double x, double y, double h, double w)
 void Rectangle::draw(ofstream & postScript)
 {
     postScript << "newpath" << endl;
-    postScript << "moveto " << point.x-(box.width/2) << " " << point.y-(box.height/2) << endl;
-    postScript << "lineto " << point.x+(box.width/2) << " " << point.y-(box.height/2) << endl;
-    postScript << "lineto " << point.x+(box.width/2) << " " << point.y+(box.height/2) << endl;
-    postScript << "lineto " << point.x-(box.width/2) << " " << point.y+(box.height/2) << endl;
+    postScript << point.x-(box.width/2) << " " << point.y-(box.height/2) << " moveto" << endl;
+    postScript << point.x+(box.width/2) << " " << point.y-(box.height/2) << " lineto" << endl;
+    postScript << point.x+(box.width/2) << " " << point.y+(box.height/2) << " lineto" << endl;
+    postScript << point.x-(box.width/2) << " " << point.y+(box.height/2) << " lineto" << endl;
     postScript << "closepath" << endl;
     postScript << "stroke" << endl;
 }
@@ -224,6 +224,7 @@ void Decorator::draw(ofstream & postScript)
 {
     postScript << "gsave" << endl;
     decorate(postScript);
+    shape_ptr->set_point(point.x, point.y);
     shape_ptr->draw(postScript);
     postScript << "grestore" << endl;
 }
