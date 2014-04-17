@@ -13,10 +13,12 @@
 using std::cout;
 using std::cin;
 using std::endl;
-#include<fstream>
+#include <fstream>
 using std::ofstream;
-#include<string>
+#include <string>
 using std::string;
+#include <memory>
+using std::shared_ptr;
 
 struct Current_Point
 {
@@ -208,12 +210,17 @@ void Spacer::draw(ofstream & postScript) {}
 class Decorator : public Shape
 {
 public:
+    virtual ~Decorator();
     using Shape::draw;
     virtual void decorate(ofstream & postScript) =0;
     virtual void draw(ofstream & postScript);
 protected:
     Shape * shape_ptr;
 };
+Decorator::~Decorator()
+{
+    delete shape_ptr;
+}
 void Decorator::draw(ofstream & postScript)
 {
     postScript << "gsave" << endl;
@@ -228,14 +235,15 @@ class Rotation : public Decorator
 {
 public:
     typedef double RotationAngle;
-    Rotation(Shape & shape, RotationAngle rotation_angle);
+    Rotation(shared_ptr<Shape> shape, RotationAngle rotation_angle);
     void decorate(ofstream & postScript);
 private:
     RotationAngle rotation_angle;
 };
-Rotation::Rotation(Shape & shape, RotationAngle rotation_angle) : rotation_angle(rotation_angle)
+Rotation::Rotation(shared_ptr<Shape> shape, RotationAngle rotation_angle) : rotation_angle(rotation_angle)
 {
-    shape_ptr = &shape;
+    shape_ptr = shape.get();
+    box = shape->get_box();
     if(rotation_angle==90 || rotation_angle==270) {
         auto temp = box.height;
         box.height = box.width;
@@ -250,16 +258,17 @@ void Rotation::decorate(ofstream & postScript)
 //Scale
 class Scaled : public Decorator
 {
-    Scaled(Shape & shape, double fx, double fy);
+public:
+    Scaled(shared_ptr<Shape> shape, double fx, double fy);
     void decorate(ofstream & postScript);
 private:
     double scale_x;
     double scale_y;
 };
-Scaled::Scaled(Shape & shape, double fx, double fy) : scale_x(fx), scale_y(fy)
+Scaled::Scaled(shared_ptr<Shape> shape, double fx, double fy) : scale_x(fx), scale_y(fy)
 {
-    shape_ptr = &shape;
-    box = shape.get_box();
+    shape_ptr = shape.get();
+    box = shape->get_box();
 }
 void Scaled::decorate(ofstream & postScript)
 {
