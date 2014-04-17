@@ -18,7 +18,9 @@ using std::ofstream;
 #include <string>
 using std::string;
 #include <memory>
-using std::shared_ptr;
+using std::unique_ptr;
+#include <utility>
+using std::move;
 
 struct Current_Point
 {
@@ -215,12 +217,9 @@ public:
     virtual void decorate(ofstream & postScript) =0;
     virtual void draw(ofstream & postScript);
 protected:
-    Shape * shape_ptr;
+    unique_ptr<Shape> shape_ptr;
 };
-Decorator::~Decorator() throw() //TODO ask Hartman why this is necessary
-{
-    delete shape_ptr;
-}
+Decorator::~Decorator() throw() {} //TODO ask Hartman why this is necessary
 void Decorator::draw(ofstream & postScript)
 {
     postScript << "gsave" << endl;
@@ -235,15 +234,15 @@ class Rotation : public Decorator
 {
 public:
     typedef double RotationAngle;
-    Rotation(shared_ptr<Shape> shape, RotationAngle rotation_angle);
+    Rotation(unique_ptr<Shape> shape, RotationAngle rotation_angle);
     void decorate(ofstream & postScript);
 private:
     RotationAngle rotation_angle;
 };
-Rotation::Rotation(shared_ptr<Shape> shape, RotationAngle rotation_angle) : rotation_angle(rotation_angle)
+Rotation::Rotation(unique_ptr<Shape> shape, RotationAngle rotation_angle) : rotation_angle(rotation_angle)
 {
-    shape_ptr = shape.get();
-    box = shape->get_box();
+    shape_ptr = move(shape);
+    box = shape_ptr->get_box();
     if(rotation_angle==90 || rotation_angle==270) {
         auto temp = box.height;
         box.height = box.width;
@@ -259,16 +258,16 @@ void Rotation::decorate(ofstream & postScript)
 class Scaled : public Decorator
 {
 public:
-    Scaled(shared_ptr<Shape> shape, double fx, double fy);
+    Scaled(unique_ptr<Shape> shape, double fx, double fy);
     void decorate(ofstream & postScript);
 private:
     double scale_x;
     double scale_y;
 };
-Scaled::Scaled(shared_ptr<Shape> shape, double fx, double fy) : scale_x(fx), scale_y(fy)
+Scaled::Scaled(unique_ptr<Shape> shape, double fx, double fy) : scale_x(fx), scale_y(fy)
 {
-    shape_ptr = shape.get();
-    box = shape->get_box();
+    shape_ptr = move(shape);
+    box = shape_ptr->get_box();
 }
 void Scaled::decorate(ofstream & postScript)
 {
@@ -290,8 +289,8 @@ Layered::Layered(/*TODO multiple shapes passed in here*/)
     box.height=0;
     box.width=0;
     for(unsigned i=0; i<shapes; ++i) {
-        box.width+=shape_ptr[i].get_box().width;
-        box.height+=shape_ptr[i].get_box().height;
+        box.width+=shape_ptr.get()[i].get_box().width;
+        box.height+=shape_ptr.get()[i].get_box().height;
     }
     point.x=box.width/2;
     point.y=box.height/2;
@@ -300,7 +299,7 @@ void Layered::draw(ofstream & postScript)
 {
     for(unsigned i=0; i<shapes; ++i) {
         postScript << "gsave" << endl;
-        shape_ptr[i].draw(postScript);
+        shape_ptr.get()[i].draw(postScript);
         postScript << "grestore" << endl;
     }
 }
@@ -320,8 +319,8 @@ Vertical::Vertical(/*TODO multiple shapes passed in here*/)
     box.height=0;
     box.width=0;
     for(unsigned i=0; i<shapes; ++i) {
-        box.height+=shape_ptr[i].get_box().height;
-        if(shape_ptr[i].get_box().width>box.width) box.width=shape_ptr[i].get_box().width;
+        box.height+=shape_ptr.get()[i].get_box().height;
+        if(shape_ptr.get()[i].get_box().width>box.width) box.width=shape_ptr.get()[i].get_box().width;
     }
     point.x=box.width/2;
     point.y=box.height/2;
@@ -330,14 +329,14 @@ void Vertical::draw(ofstream & postScript)
 {
     postScript << "gsave" << endl;
     postScript << -box.width/2 << " " << 0 << " translate" << endl;
-    postScript << shape_ptr[0].get_box().width << " " << 0 << " translate" << endl;
+    postScript << shape_ptr.get()[0].get_box().width << " " << 0 << " translate" << endl;
     for(unsigned i=0; i<shapes; ++i) {
         if(i) {
-            postScript << 0 << " " << shape_ptr[i-1].get_box().height/2 << " translate" << endl;
-            postScript << 0 << " " << shape_ptr[i].get_box().height/2 << " translate" << endl;
+            postScript << 0 << " " << shape_ptr.get()[i-1].get_box().height/2 << " translate" << endl;
+            postScript << 0 << " " << shape_ptr.get()[i].get_box().height/2 << " translate" << endl;
         }
         postScript << "gsave" << endl;
-        shape_ptr[i].draw(postScript);
+        shape_ptr.get()[i].draw(postScript);
         postScript << "grestore" << endl;
     }
     postScript << "grestore" << endl;
@@ -358,8 +357,8 @@ Horizontal::Horizontal(/*TODO multiple shapes passed in here*/)
     box.height=0;
     box.width=0;
     for(unsigned i=0; i<shapes; ++i) {
-        box.width+=shape_ptr[i].get_box().width;
-        if(shape_ptr[i].get_box().height>box.height) box.height=shape_ptr[i].get_box().height;
+        box.width+=shape_ptr.get()[i].get_box().width;
+        if(shape_ptr.get()[i].get_box().height>box.height) box.height=shape_ptr.get()[i].get_box().height;
     }
     point.x=box.width/2;
     point.y=box.height/2;
@@ -368,14 +367,14 @@ void Horizontal::draw(ofstream & postScript)
 {
     postScript << "gsave" << endl;
     postScript << 0 << " " << -box.height/2 << " translate" << endl;
-    postScript << 0 << " " << shape_ptr[0].get_box().height << " translate" << endl;
+    postScript << 0 << " " << shape_ptr.get()[0].get_box().height << " translate" << endl;
     for(unsigned i=0; i<shapes; ++i) {
         if(i) {
-            postScript << shape_ptr[i-1].get_box().height/2 << " " << 0 << " translate" << endl;
-            postScript << shape_ptr[i].get_box().height/2 << " " << 0 << " translate" << endl;
+            postScript << shape_ptr.get()[i-1].get_box().height/2 << " " << 0 << " translate" << endl;
+            postScript << shape_ptr.get()[i].get_box().height/2 << " " << 0 << " translate" << endl;
         }
         postScript << "gsave" << endl;
-        shape_ptr[i].draw(postScript);
+        shape_ptr.get()[i].draw(postScript);
         postScript << "grestore" << endl;
     }
     postScript << "grestore" << endl;

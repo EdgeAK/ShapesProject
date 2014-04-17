@@ -1,93 +1,99 @@
 #include <memory>
-using std::make_shared;
-using std::shared_ptr;
+using std::unique_ptr;
+#include <utility>
+using std::move;
 #include "ShapeClass.h"
+
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args)
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
 
 void rectangle_test()
 {
-    shared_ptr<Shape> shape = make_shared<Rectangle>(50, 40);
     string shape_name = "rectangle.ps";
-
-    shared_ptr<Shape> rotation = make_shared<Rotation>(shape, 90);
-    shared_ptr<Shape> scaled = make_shared<Scaled>(shape, 2, 3);
-
-    shape = make_shared<Rectangle>(50, 40);
+    unique_ptr<Shape> shape = make_unique<Rectangle>(50, 40);
+    unique_ptr<Shape> rotation = make_unique<Rotation>(move(shape), 90);
+                      shape = make_unique<Rectangle>(50, 40);
+    unique_ptr<Shape> scaled = make_unique<Scaled>(move(shape), 2, 3);
+    shape = make_unique<Rectangle>(50, 40);
     shape->draw(shape_name, 100, 100);
+    auto dump_ptr = move(shape);
 
-    shape = make_shared<Rectangle>(50, 40);
-    rotation = make_shared<Rotation>(shape, 90);
+    shape = make_unique<Rectangle>(50, 40);
+    rotation = make_unique<Rotation>(move(shape), 90);
     rotation->draw("rotated_"+shape_name, 100, 100);
-
-    shape = make_shared<Rectangle>(50, 40);
-    scaled = make_shared<Scaled>(shape, 2, 3);
+    shape = make_unique<Rectangle>(50, 40);
+    scaled = make_unique<Scaled>(move(shape), 2, 3);
     scaled->draw("scaled_"+shape_name, 300, 300);
 
-    shape = make_shared<Rectangle>(50, 40);
-    scaled = make_shared<Scaled>(shape, 2, 3);
-    rotation = make_shared<Rotation>(scaled, 90);
+    shape = make_unique<Rectangle>(50, 40);
+    scaled = make_unique<Scaled>(move(shape), 2, 3);
+    rotation = make_unique<Rotation>(move(scaled), 90);
     rotation->draw("scaled_rotated_"+shape_name, 300, 300);
 
-    shape = make_shared<Rectangle>(50, 40);
-    rotation = make_shared<Rotation>(shape, 90);
-    scaled = make_shared<Scaled>(rotation, 2, 3);
+    shape = make_unique<Rectangle>(50, 40);
+    rotation = make_unique<Rotation>(move(shape), 90);
+    scaled = make_unique<Scaled>(move(rotation), 2, 3);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
 void circle_test()
 {
-    shared_ptr<Shape> shape = make_shared<Circle>(50);
     string shape_name = "circle.ps";
+    unique_ptr<Shape> shape = make_unique<Circle>(50);
+    unique_ptr<Shape> rotation = make_unique<Rotation>(move(shape), 90);
+                      shape = make_unique<Circle>(50);
+    unique_ptr<Shape> scaled = make_unique<Scaled>(move(shape), 2, 3);
 
-    shared_ptr<Shape> rotation = make_shared<Rotation>(shape, 90);
-    shared_ptr<Shape> scaled = make_shared<Scaled>(shape, 2, 3);
-
-    shape = make_shared<Circle>(50);
+    shape = make_unique<Circle>(50);
     shape->draw(shape_name, 100, 100);
 
-    shape = make_shared<Circle>(50);
-    rotation = make_shared<Rotation>(shape, 90);
+    shape = make_unique<Circle>(50);
+    rotation = make_unique<Rotation>(move(shape), 90);
     rotation->draw("rotated_"+shape_name, 100, 100);
 
-    shape = make_shared<Circle>(50);
-    scaled = make_shared<Scaled>(shape, 2, 3);
+    shape = make_unique<Circle>(50);
+    scaled = make_unique<Scaled>(move(shape), 2, 3);
     scaled->draw("scaled_"+shape_name, 300, 300);
 
-    shape = make_shared<Circle>(50);
-    scaled = make_shared<Scaled>(shape, 2, 3);
-    rotation = make_shared<Rotation>(scaled, 90);
+    shape = make_unique<Circle>(50);
+    scaled = make_unique<Scaled>(move(shape), 2, 3);
+    rotation = make_unique<Rotation>(move(scaled), 90);
     rotation->draw("scaled_rotated_"+shape_name, 300, 300);
 
-    shape = make_shared<Circle>(50);
-    rotation = make_shared<Rotation>(shape, 90);
-    scaled = make_shared<Scaled>(rotation, 2, 3);
+    shape = make_unique<Circle>(50);
+    rotation = make_unique<Rotation>(move(shape), 90);
+    scaled = make_unique<Scaled>(move(rotation), 2, 3);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
 void spacer_test()
 {
-    shared_ptr<Shape> shape = make_shared<Spacer>(50, 40);
     string shape_name = "spacer.ps";
+    unique_ptr<Shape> shape = make_unique<Spacer>(50, 40);
+    unique_ptr<Shape> rotation = make_unique<Rotation>(move(shape), 90);
+                      shape = make_unique<Spacer>(50, 40);
+    unique_ptr<Shape> scaled = make_unique<Scaled>(move(shape), 2, 3);
 
-    shared_ptr<Shape> rotation = make_shared<Rotation>(shape, 90);
-    shared_ptr<Shape> scaled = make_shared<Scaled>(shape, 2, 3);
-
-    shape = make_shared<Spacer>(50, 40);
+    shape = make_unique<Spacer>(50, 40);
     shape->draw(shape_name, 100, 100);
 
-    shape = make_shared<Spacer>(50, 40);
-    rotation = make_shared<Rotation>(shape, 90);
+    shape = make_unique<Spacer>(50, 40);
+    rotation = make_unique<Rotation>(move(shape), 90);
     rotation->draw("rotated_"+shape_name, 100, 100);
 
-    shape = make_shared<Spacer>(50, 40);
-    scaled = make_shared<Scaled>(shape, 2, 3);
+    shape = make_unique<Spacer>(50, 40);
+    scaled = make_unique<Scaled>(move(shape), 2, 3);
     scaled->draw("scaled_"+shape_name, 300, 300);
 
-    shape = make_shared<Spacer>(50, 40);
-    scaled = make_shared<Scaled>(shape, 2, 3);
-    rotation = make_shared<Rotation>(scaled, 90);
+    shape = make_unique<Spacer>(50, 40);
+    scaled = make_unique<Scaled>(move(shape), 2, 3);
+    rotation = make_unique<Rotation>(move(scaled), 90);
     rotation->draw("scaled_rotated_"+shape_name, 300, 300);
 
-    shape = make_shared<Spacer>(50, 40);
-    rotation = make_shared<Rotation>(shape, 90);
-    scaled = make_shared<Scaled>(rotation, 2, 3);
+    shape = make_unique<Spacer>(50, 40);
+    rotation = make_unique<Rotation>(move(shape), 90);
+    scaled = make_unique<Scaled>(move(rotation), 2, 3);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
 
