@@ -1,7 +1,3 @@
-#include <iostream>
-using std::cin;
-using std::cout;
-using std::endl;
 #include <memory>
 using std::make_shared;
 using std::shared_ptr;
@@ -67,29 +63,29 @@ int main()
 
     rectangle = make_shared<Rectangle>(50, 40);
     rotation = make_shared<Rotation>(rectangle, 90);
-    scaled = make_shared<Scaled>(scaled, 2, 3);
+    scaled = make_shared<Scaled>(rotation, 2, 3);
     scaled->draw("rotated_scaled_rectangle.ps", 300, 300);
 /*
     //Circle
     circle = make_shared<Circle>(50);
-    circle->draw("rectangle.ps", 100, 100);
+    circle->draw("circle.ps", 100, 100);
 
     circle = make_shared<Circle>(50);
-    rotation = make_shared<Rotation>(rectangle, 90);
+    rotation = make_shared<Rotation>(circle, 90);
     rotation->draw("rotated_circle.ps", 100, 100);
 
     circle = make_shared<Circle>(50);
-    scaled = make_shared<Scaled>(rectangle, 2, 3);
+    scaled = make_shared<Scaled>(circle, 2, 3);
     scaled->draw("scaled_circle.ps", 300, 300);
 
     circle = make_shared<Circle>(50);
-    scaled = make_shared<Scaled>(rectangle, 2, 3);
+    scaled = make_shared<Scaled>(circle, 2, 3);
     rotation = make_shared<Rotation>(scaled, 90);
     rotation->draw("scaled_rotated_circle.ps", 300, 300);
 
     circle = make_shared<Circle>(50);
-    rotation = make_shared<Rotation>(rectangle, 2, 3);
-    scaled = make_shared<Scaled>(scaled, 90);
+    rotation = make_shared<Rotation>(circle, 2, 3);
+    scaled = make_shared<Scaled>(rotation, 90);
     scaled->draw("rotated_scaled_circle.ps", 300, 300);
 */
     return 0;
