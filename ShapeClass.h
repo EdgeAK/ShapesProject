@@ -255,7 +255,9 @@ Rotation::Rotation(unique_ptr<Shape> shape, RotationAngle rotation_angle) : rota
 void Rotation::decorate(ofstream & postScript)
 {
     postScript << rotation_angle << " rotate" << endl;
-    shape_ptr.get()->set_point((shape_ptr.get()->get_point().y), -(shape_ptr.get()->get_point().x));
+    if(rotation_angle==90) shape_ptr.get()->set_point((shape_ptr.get()->get_point().y), -(shape_ptr.get()->get_point().x));
+    if(rotation_angle==180) shape_ptr.get()->set_point(-(shape_ptr.get()->get_point().x), -(shape_ptr.get()->get_point().y));
+    if(rotation_angle==270) shape_ptr.get()->set_point(-(shape_ptr.get()->get_point().y), (shape_ptr.get()->get_point().x));
 }
 
 //Scale
