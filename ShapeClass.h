@@ -289,7 +289,7 @@ Layered::Layered(/*TODO multiple shapes passed in here*/)
     //TODO Make shape_ptr into an indexable array of Shapes, using the arguments as an initialiver list..
     box.height=0;
     box.width=0;
-    for(auto i=0; i<shapes; ++i) {
+    for(unsigned i=0; i<shapes; ++i) {
         box.width+=shape_ptr[i].get_box().width;
         box.height+=shape_ptr[i].get_box().height;
     }
@@ -298,7 +298,7 @@ Layered::Layered(/*TODO multiple shapes passed in here*/)
 }
 void Layered::draw(ofstream & postScript)
 {
-    for(auto i=0; i<shapes; ++i) {
+    for(unsigned i=0; i<shapes; ++i) {
         postScript << "gsave" << endl;
         shape_ptr[i].draw(postScript);
         postScript << "grestore" << endl;
@@ -319,7 +319,7 @@ Vertical::Vertical(/*TODO multiple shapes passed in here*/)
     //TODO Make shape_ptr into an indexable array of Shapes, using the arguments as an initialiver list..
     box.height=0;
     box.width=0;
-    for(auto i=0; i<shapes; ++i) {
+    for(unsigned i=0; i<shapes; ++i) {
         box.height+=shape_ptr[i].get_box().height;
         if(shape_ptr[i].get_box().width>box.width) box.width=shape_ptr[i].get_box().width;
     }
@@ -331,7 +331,7 @@ void Vertical::draw(ofstream & postScript)
     postScript << "gsave" << endl;
     postScript << -box.width/2 << " " << 0 << " translate" << endl;
     postScript << shape_ptr[0].get_box().width << " " << 0 << " translate" << endl;
-    for(auto i=0; i<shapes; ++i) {
+    for(unsigned i=0; i<shapes; ++i) {
         if(i) {
             postScript << 0 << " " << shape_ptr[i-1].get_box().height/2 << " translate" << endl;
             postScript << 0 << " " << shape_ptr[i].get_box().height/2 << " translate" << endl;
@@ -357,7 +357,7 @@ Horizontal::Horizontal(/*TODO multiple shapes passed in here*/)
     //TODO Make shape_ptr into an indexable array of Shapes, using the arguments as an initialiver list..
     box.height=0;
     box.width=0;
-    for(auto i=0; i<shapes; ++i) {
+    for(unsigned i=0; i<shapes; ++i) {
         box.width+=shape_ptr[i].get_box().width;
         if(shape_ptr[i].get_box().height>box.height) box.height=shape_ptr[i].get_box().height;
     }
@@ -369,7 +369,7 @@ void Horizontal::draw(ofstream & postScript)
     postScript << "gsave" << endl;
     postScript << 0 << " " << -box.height/2 << " translate" << endl;
     postScript << 0 << " " << shape_ptr[0].get_box().height << " translate" << endl;
-    for(auto i=0; i<shapes; ++i) {
+    for(unsigned i=0; i<shapes; ++i) {
         if(i) {
             postScript << shape_ptr[i-1].get_box().height/2 << " " << 0 << " translate" << endl;
             postScript << shape_ptr[i].get_box().height/2 << " " << 0 << " translate" << endl;
