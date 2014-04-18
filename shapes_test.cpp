@@ -93,25 +93,43 @@ void spacer_test()
 }
 void multiple_test()
 {
-	string shape_name = "multiple.ps";
-	unique_ptr<Shape> rectangle = make_unique<Rectangle>(50, 40);
-    unique_ptr<Shape> spacer = make_unique<Spacer>(50, 40);
-    unique_ptr<Shape> circle = make_unique<Circle>(50);
-
+	unique_ptr<Shape> rectangle;
+    unique_ptr<Shape> spacer;
+    unique_ptr<Shape> circle;
+    vector<unique_ptr<Shape>> pass(3);
+    
+cout << "A" << endl;
     rectangle = make_unique<Rectangle>(50, 40);
     spacer = make_unique<Spacer>(50, 40);
     circle = make_unique<Circle>(50);
-    unique_ptr<Shape> layered = make_unique<Layered>(move(rectangle), move(spacer), move(circle));
+cout << "B" << endl;
+    pass[0]=(move(rectangle));
+    pass[1]=(move(spacer));
+    pass[2]=(move(circle));
+cout << "C" << endl;
+    unique_ptr<Shape> layered = make_unique<Layered>(pass);
+cout << "D" << endl;
+	layered->draw("layered.ps", 300, 300);
+cout << "E" << endl;
 
 	rectangle = make_unique<Rectangle>(50, 40);
     spacer = make_unique<Spacer>(50, 40);
     circle = make_unique<Circle>(50);
-    unique_ptr<Shape> vertical = make_unique<Vertical>(move(rectangle), move(spacer), move(circle));
+    pass[0]=(move(rectangle));
+    pass[1]=(move(spacer));
+    pass[2]=(move(circle));
+    unique_ptr<Shape> vertical = make_unique<Vertical>(pass);
+    vertical->draw("vertical.ps", 300, 300);
 
 	rectangle = make_unique<Rectangle>(50, 40);
     spacer = make_unique<Spacer>(50, 40);
     circle = make_unique<Circle>(50);
-	unique_ptr<Shape> horizontal = make_unique<Horizontal>(move(rectangle), move(spacer), move(circle));
+    pass[0]=(move(rectangle));
+    pass[1]=(move(spacer));
+    pass[2]=(move(circle));
+	unique_ptr<Shape> horizontal = make_unique<Horizontal>(pass);
+	horizontal->draw("horizontal.ps", 300, 300);
+
 }
 
 int main()

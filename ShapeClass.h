@@ -24,22 +24,11 @@ using std::move;
 #include <vector>
 using std::vector;
 
-#ifdef _WIN32
-#define MAKE_UNIQUE(TEMPLATE_LIST, PADDING_LIST, LIST, COMMA, X1, X2, X3, X4)   \
-  template<class T COMMA LIST(_CLASS_TYPE)>  \
-  inline std::unique_ptr<T> make_unique(LIST(_TYPE_REFREF_ARG))  \
-  {  \
-      return std::unique_ptr<T>(new T(LIST(_FORWARD_ARG)));  \
-  }
-_VARIADIC_EXPAND_0X(MAKE_UNIQUE, , , , )
-#undef MAKE_UNIQUE
-#elif __linux__
 template<typename T, typename... Args>
 std::unique_ptr<T> make_unique(Args&&... args)
 {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
-#endif
 
 struct Current_Point
 {
@@ -306,15 +295,15 @@ void Scaled::decorate(ofstream & postScript)
 class Layered : public Decorator
 {
 public:
-    Layered(vector<unique_ptr<Shape>> & input);
+    Layered(const vector<unique_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
     unsigned shapes;
 };
-Layered::Layered(vector<unique_ptr<Shape>> & input)
+Layered::Layered(const vector<unique_ptr<Shape>> & input)
 {
 	for(unsigned index=0; index<input.size(); ++index) {
-		shape_ptr.get()[index] = *input[index].get();
+		shape_ptr.get()[index] = move(*input[index]);
 	}
     box.height=0;
     box.width=0;
@@ -338,12 +327,12 @@ void Layered::draw(ofstream & postScript)
 class Vertical : public Decorator
 {
 public:
-    Vertical(vector<unique_ptr<Shape>> & input);
+    Vertical(const vector<unique_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
     unsigned shapes;
 };
-Vertical::Vertical(vector<unique_ptr<Shape>> & input)
+Vertical::Vertical(const vector<unique_ptr<Shape>> & input)
 {
     for(unsigned index=0; index<input.size(); ++index) {
 		shape_ptr.get()[index] = *input[index].get();
@@ -378,12 +367,12 @@ void Vertical::draw(ofstream & postScript)
 class Horizontal : public Decorator
 {
 public:
-    Horizontal(vector<unique_ptr<Shape>> & input);
+    Horizontal(const vector<unique_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
     unsigned shapes;
 };
-Horizontal::Horizontal(vector<unique_ptr<Shape>> & input)
+Horizontal::Horizontal(const vector<unique_ptr<Shape>> & input)
 {
     for(unsigned index=0; index<input.size(); ++index) {
 		shape_ptr.get()[index] = *input[index].get();
