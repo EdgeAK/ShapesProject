@@ -4,23 +4,6 @@ using std::unique_ptr;
 using std::move;
 #include "ShapeClass.h"
 
-#ifdef _WIN32
-#define MAKE_UNIQUE(TEMPLATE_LIST, PADDING_LIST, LIST, COMMA, X1, X2, X3, X4)   \
-  template<class T COMMA LIST(_CLASS_TYPE)>  \
-  inline std::unique_ptr<T> make_unique(LIST(_TYPE_REFREF_ARG))  \
-  {  \
-      return std::unique_ptr<T>(new T(LIST(_FORWARD_ARG)));  \
-  }
-_VARIADIC_EXPAND_0X(MAKE_UNIQUE, , , , )
-#undef MAKE_UNIQUE
-#elif __linux__
-template<typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args&&... args)
-{
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
-#endif
-
 void rectangle_test()
 {
     string shape_name = "rectangle.ps";
@@ -108,11 +91,34 @@ void spacer_test()
     scaled = make_unique<Scaled>(move(rotation), .5, 2);
     scaled->draw("rotated_scaled_"+shape_name, 300, 300);
 }
+void multiple_test()
+{
+	string shape_name = "multiple.ps";
+	unique_ptr<Shape> rectangle = make_unique<Rectangle>(50, 40);
+    unique_ptr<Shape> spacer = make_unique<Spacer>(50, 40);
+    unique_ptr<Shape> circle = make_unique<Circle>(50);
+
+    rectangle = make_unique<Rectangle>(50, 40);
+    spacer = make_unique<Spacer>(50, 40);
+    circle = make_unique<Circle>(50);
+    unique_ptr<Shape> layered = make_unique<Layered>(move(rectangle), move(spacer), move(circle));
+
+	rectangle = make_unique<Rectangle>(50, 40);
+    spacer = make_unique<Spacer>(50, 40);
+    circle = make_unique<Circle>(50);
+    unique_ptr<Shape> vertical = make_unique<Vertical>(move(rectangle), move(spacer), move(circle));
+
+	rectangle = make_unique<Rectangle>(50, 40);
+    spacer = make_unique<Spacer>(50, 40);
+    circle = make_unique<Circle>(50);
+	unique_ptr<Shape> horizontal = make_unique<Horizontal>(move(rectangle), move(spacer), move(circle));
+}
 
 int main()
 {
     rectangle_test();
     circle_test();
     spacer_test();
+	multiple_test();
     return 0;
 }

@@ -21,6 +21,25 @@ using std::string;
 using std::unique_ptr;
 #include <utility>
 using std::move;
+#include <vector>
+using std::vector;
+
+#ifdef _WIN32
+#define MAKE_UNIQUE(TEMPLATE_LIST, PADDING_LIST, LIST, COMMA, X1, X2, X3, X4)   \
+  template<class T COMMA LIST(_CLASS_TYPE)>  \
+  inline std::unique_ptr<T> make_unique(LIST(_TYPE_REFREF_ARG))  \
+  {  \
+      return std::unique_ptr<T>(new T(LIST(_FORWARD_ARG)));  \
+  }
+_VARIADIC_EXPAND_0X(MAKE_UNIQUE, , , , )
+#undef MAKE_UNIQUE
+#elif __linux__
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args)
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+#endif
 
 struct Current_Point
 {
@@ -217,12 +236,13 @@ class Decorator : public Shape
 public:
     virtual ~Decorator() throw(); //TODO ask Hartman why this is necessary
     using Shape::draw;
-    virtual void decorate(ofstream & postScript) =0;
+    virtual void decorate(ofstream & postScript);
     virtual void draw(ofstream & postScript);
 protected:
     unique_ptr<Shape> shape_ptr;
 };
 Decorator::~Decorator() throw() {} //TODO ask Hartman why this is necessary
+void Decorator::decorate(ofstream & postScript) {}
 void Decorator::draw(ofstream & postScript)
 {
     postScript << "gsave" << endl;
@@ -286,14 +306,16 @@ void Scaled::decorate(ofstream & postScript)
 class Layered : public Decorator
 {
 public:
-    Layered(/*TODO multiple shapes passed in here*/);
+    Layered(vector<unique_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
     unsigned shapes;
 };
-Layered::Layered(/*TODO multiple shapes passed in here*/)
+Layered::Layered(vector<unique_ptr<Shape>> & input)
 {
-    //TODO Make shape_ptr into an indexable array of Shapes, using the arguments as an initialiver list..
+	for(unsigned index=0; index<input.size(); ++index) {
+		shape_ptr.get()[index] = *input[index].get();
+	}
     box.height=0;
     box.width=0;
     for(unsigned i=0; i<shapes; ++i) {
@@ -316,14 +338,16 @@ void Layered::draw(ofstream & postScript)
 class Vertical : public Decorator
 {
 public:
-    Vertical(/*TODO multiple shapes passed in here*/);
+    Vertical(vector<unique_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
     unsigned shapes;
 };
-Vertical::Vertical(/*TODO multiple shapes passed in here*/)
+Vertical::Vertical(vector<unique_ptr<Shape>> & input)
 {
-    //TODO Make shape_ptr into an indexable array of Shapes, using the arguments as an initialiver list..
+    for(unsigned index=0; index<input.size(); ++index) {
+		shape_ptr.get()[index] = *input[index].get();
+	}
     box.height=0;
     box.width=0;
     for(unsigned i=0; i<shapes; ++i) {
@@ -354,14 +378,16 @@ void Vertical::draw(ofstream & postScript)
 class Horizontal : public Decorator
 {
 public:
-    Horizontal(/*TODO multiple shapes passed in here*/);
+    Horizontal(vector<unique_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
     unsigned shapes;
 };
-Horizontal::Horizontal(/*TODO multiple shapes passed in here*/)
+Horizontal::Horizontal(vector<unique_ptr<Shape>> & input)
 {
-    //TODO Make shape_ptr into an indexable array of Shapes, using the arguments as an initialiver list..
+    for(unsigned index=0; index<input.size(); ++index) {
+		shape_ptr.get()[index] = *input[index].get();
+	}
     box.height=0;
     box.width=0;
     for(unsigned i=0; i<shapes; ++i) {
