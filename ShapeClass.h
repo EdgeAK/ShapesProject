@@ -302,11 +302,14 @@ private:
 };
 Layered::Layered(const vector<unique_ptr<Shape>> & input)
 {
+	//TODO Need to initialize shape_ptr to hold input.size() Shapes.
+cout << "a" << endl;
 	for(unsigned index=0; index<input.size(); ++index) {
 		shape_ptr.get()[index] = move(*input[index]);
 	}
     box.height=0;
     box.width=0;
+cout << "b" << endl;
     for(unsigned i=0; i<shapes; ++i) {
         box.width+=shape_ptr.get()[i].get_box().width;
         box.height+=shape_ptr.get()[i].get_box().height;
