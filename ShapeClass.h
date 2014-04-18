@@ -20,6 +20,10 @@ using std::make_shared;
 using std::ofstream;
 #include<string>
 using std::string;
+#define _USE_MATH_DEFINES //needed for M_PI 
+#include<math.h>
+using std::sin;
+using std::cos;
 
 
 struct Point
@@ -202,12 +206,20 @@ Polygon::Polygon(double x, double y, double edgeLength, int numberOfEdges)
     setPoint(x, y);
     _edgeLength = edgeLength;
 	_numberOfEdges = numberOfEdges;
+	determineBox(edgeLength, numberOfEdges);
 }
 
-void determineBox(double edgeLength, int numberOfEdges)
+void Polygon::determineBox(double edgeLength, int numberOfEdges)
 {
 
+	if (numberOfEdges % 2 != 0)
+		setBox(edgeLength * ( 1+ cos ( M_PI / numberOfEdges )) / ( 2*sin ( M_PI / numberOfEdges )), (edgeLength * sin ( M_PI * (-1) / 2 * numberOfEdges)) / (sin(M_PI/numberOfEdges)));
 
+	if (numberOfEdges % 4 == 0)
+		setBox( (edgeLength* ( cos( M_PI / numberOfEdges))) / ( sin( M_PI / numberOfEdges)), (edgeLength * cos( M_PI / numberOfEdges)) / ( sin( M_PI / numberOfEdges)));
+
+	if (numberOfEdges % 4 != 0 && numberOfEdges % 2 == 0)
+		setBox( (edgeLength*( cos( M_PI / numberOfEdges))) / ( sin(M_PI / numberOfEdges)), edgeLength / sin( M_PI / numberOfEdges));
 }
 
 void Polygon::draw()
