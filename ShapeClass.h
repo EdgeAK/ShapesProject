@@ -47,17 +47,13 @@ struct Scale
 class Shape
 {
 public:
-    //virtual ~Shape() = default;
+    virtual ~Shape();
     virtual void draw() = 0;
     virtual ofstream createFile(string fileName);
     void setPoint(double x, double y);
     void setBox(double height, double width);
     void scaled(double x, double y);
     void rotate(double rotDegree);
-    
-    //    Point getCurPoint();
-    //    Scale getScale();
-    //    double getRotation();
     
 protected:
     Point _currentPoint;
@@ -96,21 +92,6 @@ void Shape::rotate(double r)
 {
     _rotationDegree = r;
 }
-
-//Point Shape::getCurPoint()
-//{
-//    return _currentPoint;
-//}
-//Scale Shape::getScale()
-//{
-//    return _shapeScale;
-//}
-//
-//double Shape::getRotation()
-//{
-//    return _rotationDegree;
-//}
-
 
 class Rectangle : public Shape
 {
