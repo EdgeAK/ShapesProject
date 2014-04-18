@@ -40,15 +40,15 @@ struct Box
 
 struct Scale
 {
-    double _x = 1;
-    double _y = 1;
+    double _x;
+    double _y;
 };
 
 class Shape
 {
 public:
     //virtual ~Shape() = default;
-    virtual void draw(string fileName) = 0;
+    virtual void draw() = 0;
     virtual ofstream createFile(string fileName);
     void setPoint(double x, double y);
     void setBox(double height, double width);
@@ -63,7 +63,7 @@ protected:
     Point _currentPoint;
     Box _boundingBox;
     Scale _shapeScale;
-    double _rotationDegree = 0;
+    double _rotationDegree;
 };
 
 ofstream Shape::createFile(string fileName)
@@ -154,7 +154,7 @@ class Circle : public Shape
 {
 public:
     Circle(double x, double y, double radius);
-    void draw(string fileName);
+    void draw();
 private:
     double _radius;
 };
@@ -166,11 +166,11 @@ Circle::Circle(double x, double y, double radius)
     setBox(radius*2, radius*2);
 }
 
-void Circle::draw(string fileName)
+void Circle::draw()
 {
-    //string fileName;
-    //cout << "Name of file: " << endl;
-    //cin >> fileName;
+    string fileName;
+    cout << "Name of file: " << endl;
+    cin >> fileName;
     ofstream postScriptOut = createFile(fileName + ".ps");
     
     postScriptOut << "/circle{" << endl;
