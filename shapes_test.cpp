@@ -98,19 +98,14 @@ void multiple_test()
     unique_ptr<Shape> circle;
     vector<unique_ptr<Shape>> pass(3);
     
-cout << "A" << endl;
     rectangle = make_unique<Rectangle>(50, 40);
     spacer = make_unique<Spacer>(50, 40);
     circle = make_unique<Circle>(50);
-cout << "B" << endl;
     pass[0]=(move(rectangle));
     pass[1]=(move(spacer));
     pass[2]=(move(circle));
-cout << "C" << endl;
     unique_ptr<Shape> layered = make_unique<Layered>(pass);
-cout << "D" << endl;
 	layered->draw("layered.ps", 300, 300);
-cout << "E" << endl;
 
 	rectangle = make_unique<Rectangle>(50, 40);
     spacer = make_unique<Spacer>(50, 40);

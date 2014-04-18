@@ -219,37 +219,15 @@ Spacer::Spacer(double x, double y, double h, double w)
 }
 void Spacer::draw(ofstream & postScript) {}
 
-//Decorator
-class Decorator : public Shape
-{
-public:
-    virtual ~Decorator() throw(); //TODO ask Hartman why this is necessary
-    using Shape::draw;
-    virtual void decorate(ofstream & postScript);
-    virtual void draw(ofstream & postScript);
-protected:
-    unique_ptr<Shape> shape_ptr;
-};
-Decorator::~Decorator() throw() {} //TODO ask Hartman why this is necessary
-void Decorator::decorate(ofstream & postScript) {}
-void Decorator::draw(ofstream & postScript)
-{
-    postScript << "gsave" << endl;
-    shape_ptr->set_point(point.x, point.y);
-    decorate(postScript);
-    shape_ptr->draw(postScript);
-    postScript << "grestore" << endl;
-}
-
-//Decorators
 //Rotation
-class Rotation : public Decorator
+class Rotation : public Shape
 {
 public:
     typedef double RotationAngle;
     Rotation(unique_ptr<Shape> shape, RotationAngle rotation_angle);
-    void decorate(ofstream & postScript);
+    void draw(ofstream & postScript);
 private:
+    unique_ptr<Shape> shape_ptr;
     RotationAngle rotation_angle;
 };
 Rotation::Rotation(unique_ptr<Shape> shape, RotationAngle rotation_angle) : rotation_angle(rotation_angle)
@@ -262,21 +240,26 @@ Rotation::Rotation(unique_ptr<Shape> shape, RotationAngle rotation_angle) : rota
         box.width = temp;
     }
 }
-void Rotation::decorate(ofstream & postScript)
+void Rotation::draw(ofstream & postScript)
 {
+    postScript << "gsave" << endl;
+    shape_ptr->set_point(point.x, point.y);
     postScript << rotation_angle << " rotate" << endl;
     if(rotation_angle==90) shape_ptr.get()->set_point((shape_ptr.get()->get_point().y), -(shape_ptr.get()->get_point().x));
     if(rotation_angle==180) shape_ptr.get()->set_point(-(shape_ptr.get()->get_point().x), -(shape_ptr.get()->get_point().y));
     if(rotation_angle==270) shape_ptr.get()->set_point(-(shape_ptr.get()->get_point().y), (shape_ptr.get()->get_point().x));
+    shape_ptr->draw(postScript);
+    postScript << "grestore" << endl;
 }
 
 //Scale
-class Scaled : public Decorator
+class Scaled : public Shape
 {
 public:
     Scaled(unique_ptr<Shape> shape, double fx, double fy);
-    void decorate(ofstream & postScript);
+    void draw(ofstream & postScript);
 private:
+    unique_ptr<Shape> shape_ptr;
     double scale_x;
     double scale_y;
 };
@@ -285,122 +268,109 @@ Scaled::Scaled(unique_ptr<Shape> shape, double fx, double fy) : scale_x(fx), sca
     shape_ptr = move(shape);
     box = shape_ptr->get_box();
 }
-void Scaled::decorate(ofstream & postScript)
+void Scaled::draw(ofstream & postScript)
 {
+    postScript << "gsave" << endl;
+    shape_ptr->set_point(point.x, point.y);
     postScript << scale_x << " " << scale_y << " scale" << endl;
 	shape_ptr.get()->set_point((shape_ptr.get()->get_point().x)/scale_x, (shape_ptr.get()->get_point().y)/scale_y);
+    shape_ptr->draw(postScript);
+    postScript << "grestore" << endl;
 }
 
 //Layered
-class Layered : public Decorator
+class Layered : public Shape
 {
 public:
-    Layered(const vector<unique_ptr<Shape>> & input);
+    Layered(vector<unique_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
-    unsigned shapes;
+    vector<unique_ptr<Shape>> shape_vec;
 };
-Layered::Layered(const vector<unique_ptr<Shape>> & input)
+Layered::Layered(vector<unique_ptr<Shape>> & input)
 {
-	//TODO Need to initialize shape_ptr to hold input.size() Shapes.
-cout << "a" << endl;
-	for(unsigned index=0; index<input.size(); ++index) {
-		shape_ptr.get()[index] = move(*input[index]);
-	}
     box.height=0;
     box.width=0;
-cout << "b" << endl;
-    for(unsigned i=0; i<shapes; ++i) {
-        box.width+=shape_ptr.get()[i].get_box().width;
-        box.height+=shape_ptr.get()[i].get_box().height;
-    }
-    point.x=box.width/2;
-    point.y=box.height/2;
+    shape_vec.resize(input.size());
+	for(unsigned index=0; index<input.size(); ++index) {
+		shape_vec[index] = move(input[index]);
+        box.width+=shape_vec[index].get()->get_box().width;
+        box.height+=shape_vec[index].get()->get_box().height;
+	}
 }
 void Layered::draw(ofstream & postScript)
 {
-    for(unsigned i=0; i<shapes; ++i) {
+    for(unsigned index=0; index<shape_vec.size(); ++index) {
         postScript << "gsave" << endl;
-        shape_ptr.get()[i].draw(postScript);
+        shape_vec[index].get()->set_point(point.x, point.y);
+        shape_vec[index].get()->draw(postScript);
         postScript << "grestore" << endl;
     }
 }
 
 //Vertical
-class Vertical : public Decorator
+class Vertical : public Shape
 {
 public:
-    Vertical(const vector<unique_ptr<Shape>> & input);
+    Vertical(vector<unique_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
-    unsigned shapes;
+    vector<unique_ptr<Shape>> shape_vec;
 };
-Vertical::Vertical(const vector<unique_ptr<Shape>> & input)
+Vertical::Vertical(vector<unique_ptr<Shape>> & input)
 {
-    for(unsigned index=0; index<input.size(); ++index) {
-		shape_ptr.get()[index] = *input[index].get();
-	}
     box.height=0;
     box.width=0;
-    for(unsigned i=0; i<shapes; ++i) {
-        box.height+=shape_ptr.get()[i].get_box().height;
-        if(shape_ptr.get()[i].get_box().width>box.width) box.width=shape_ptr.get()[i].get_box().width;
-    }
-    point.x=box.width/2;
-    point.y=box.height/2;
+    shape_vec.resize(input.size());
+    for(unsigned index=0; index<input.size(); ++index) {
+		shape_vec[index] = move(input[index]);
+        box.height+=shape_vec[index].get()->get_box().height;
+        if(shape_vec[index].get()->get_box().width>box.width) box.width=shape_vec[index].get()->get_box().width;
+	}
 }
 void Vertical::draw(ofstream & postScript)
 {
     postScript << "gsave" << endl;
-    postScript << -box.width/2 << " " << 0 << " translate" << endl;
-    postScript << shape_ptr.get()[0].get_box().width << " " << 0 << " translate" << endl;
-    for(unsigned i=0; i<shapes; ++i) {
-        if(i) {
-            postScript << 0 << " " << shape_ptr.get()[i-1].get_box().height/2 << " translate" << endl;
-            postScript << 0 << " " << shape_ptr.get()[i].get_box().height/2 << " translate" << endl;
-        }
+    double height = shape_vec[0].get()->get_box().height/2 - box.height/2 + point.y;
+    for(unsigned index=0; index<shape_vec.size(); ++index) {
+        if(index) height+=shape_vec[index-1].get()->get_box().height/2+shape_vec[index].get()->get_box().height/2;
+        shape_vec[index].get()->set_point(point.x, height);
         postScript << "gsave" << endl;
-        shape_ptr.get()[i].draw(postScript);
+        shape_vec[index].get()->draw(postScript);
         postScript << "grestore" << endl;
     }
     postScript << "grestore" << endl;
 }
 
 //Horizontal
-class Horizontal : public Decorator
+class Horizontal : public Shape
 {
 public:
-    Horizontal(const vector<unique_ptr<Shape>> & input);
+    Horizontal(vector<unique_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
-    unsigned shapes;
+    vector<unique_ptr<Shape>> shape_vec;
 };
-Horizontal::Horizontal(const vector<unique_ptr<Shape>> & input)
+Horizontal::Horizontal(vector<unique_ptr<Shape>> & input)
 {
-    for(unsigned index=0; index<input.size(); ++index) {
-		shape_ptr.get()[index] = *input[index].get();
-	}
     box.height=0;
     box.width=0;
-    for(unsigned i=0; i<shapes; ++i) {
-        box.width+=shape_ptr.get()[i].get_box().width;
-        if(shape_ptr.get()[i].get_box().height>box.height) box.height=shape_ptr.get()[i].get_box().height;
-    }
-    point.x=box.width/2;
-    point.y=box.height/2;
+    shape_vec.resize(input.size());
+    for(unsigned index=0; index<input.size(); ++index) {
+		shape_vec[index] = move(input[index]);
+        box.width+=shape_vec[index].get()->get_box().width;
+        if(shape_vec[index].get()->get_box().height>box.height) box.height=shape_vec[index].get()->get_box().height;
+	}
 }
 void Horizontal::draw(ofstream & postScript)
 {
     postScript << "gsave" << endl;
-    postScript << 0 << " " << -box.height/2 << " translate" << endl;
-    postScript << 0 << " " << shape_ptr.get()[0].get_box().height << " translate" << endl;
-    for(unsigned i=0; i<shapes; ++i) {
-        if(i) {
-            postScript << shape_ptr.get()[i-1].get_box().height/2 << " " << 0 << " translate" << endl;
-            postScript << shape_ptr.get()[i].get_box().height/2 << " " << 0 << " translate" << endl;
-        }
+    double length = shape_vec[0].get()->get_box().width/2 - box.width/2 + point.x;
+    for(unsigned index=0; index<shape_vec.size(); ++index) {
+        if(index) length+=shape_vec[index-1].get()->get_box().width/2+shape_vec[index].get()->get_box().width/2;
+        shape_vec[index].get()->set_point(length, point.y);
         postScript << "gsave" << endl;
-        shape_ptr.get()[i].draw(postScript);
+        shape_vec[index].get()->draw(postScript);
         postScript << "grestore" << endl;
     }
     postScript << "grestore" << endl;
