@@ -23,6 +23,7 @@ using std::unique_ptr;
 using std::move;
 #include <vector>
 using std::vector;
+#include <cmath>
 
 template<typename T, typename... Args>
 std::unique_ptr<T> make_unique(Args&&... args)
@@ -161,9 +162,10 @@ private:
 };
 Polygon::Polygon(unsigned sides, double length) : sides(sides), length(length)
 {
-    //TODO calculate to determine box and point
     set_point(0, 0);
-    set_box(0, 0);
+    if (sides%2!=0) set_box(length*(1+cos(M_PI/sides)) / (2*sin(M_PI/sides)), (length*sin (M_PI*(-1)/2*sides)) / (sin(M_PI/sides)));
+	else if (sides%4==0) set_box(length*(cos(M_PI/sides)) / (sin(M_PI/sides)), (length*cos(M_PI/sides)) / (sin(M_PI/sides)));
+	else if (sides%4!=0 && sides%2==0) set_box(length*(cos(M_PI/sides)) / (sin(M_PI/sides)), length/sin(M_PI/sides));
 }
 void Polygon::draw(ofstream & postScript)
 {
