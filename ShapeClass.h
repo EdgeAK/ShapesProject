@@ -38,7 +38,7 @@ struct Bounding_Box
 class Shape
 {
 public:
-    virtual ~Shape() = default;
+    virtual ~Shape();
 
     virtual void draw(ofstream & postScript) = 0;
     void draw();
@@ -54,6 +54,7 @@ protected:
     Current_Point point;
     Bounding_Box box;
 };
+Shape::~Shape() {}
 void Shape::draw()
 {
     string filename;
