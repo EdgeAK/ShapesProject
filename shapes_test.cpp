@@ -18,35 +18,35 @@ void shape_test()
     vector<shared_ptr<Shape>> pass(3);
 
     rectangle = make_shared<Rectangle>(50, 40);
-    rectangle->draw("01_rectangle", 300, 300);
+    rectangle->draw("01_rectangle.ps", 300, 300);
     rotation = make_shared<Rotation>(rectangle, 90);
-    rotation->draw("02_rotated_rectangle", 300, 300);
+    rotation->draw("02_rotated_rectangle.ps", 300, 300);
     scaled = make_shared<Scaled>(rectangle, .5, 2);
-    scaled->draw("03_scaled_rectangle", 300, 300);
+    scaled->draw("03_scaled_rectangle.ps", 300, 300);
     scaled = make_shared<Scaled>(rectangle, .5, 2);
     rotation = make_shared<Rotation>(scaled, 90);
-    rotation->draw("04_scaled_rotated_rectangle", 300, 300);
+    rotation->draw("04_scaled_rotated_rectangle.ps", 300, 300);
     rotation = make_shared<Rotation>(rectangle, 90);
     scaled = make_shared<Scaled>(rotation, .5, 2);
-    scaled->draw("05_rotated_scaled_rectangle", 300, 300);
+    scaled->draw("05_rotated_scaled_rectangle.ps", 300, 300);
 
     circle = make_shared<Circle>(50);
     rotation = make_shared<Rotation>(circle, 90);
     scaled = make_shared<Scaled>(circle, .5, 2);
     circle->draw("06_circle", 300, 300);
     rotation = make_shared<Rotation>(circle, 90);
-    rotation->draw("07_rotated_circle", 300, 300);
+    rotation->draw("07_rotated_circle.ps", 300, 300);
     scaled = make_shared<Scaled>(circle, .5, 2);
-    scaled->draw("08_scaled_circle", 300, 300);
+    scaled->draw("08_scaled_circle.ps", 300, 300);
     scaled = make_shared<Scaled>(circle, .5, 2);
     rotation = make_shared<Rotation>(scaled, 90);
-    rotation->draw("09_scaled_rotated_circle", 300, 300);
+    rotation->draw("09_scaled_rotated_circle.ps", 300, 300);
     rotation = make_shared<Rotation>(circle, 90);
     scaled = make_shared<Scaled>(rotation, .5, 2);
-    scaled->draw("10_rotated_scaled_circle", 300, 300);
+    scaled->draw("10_rotated_scaled_circle.ps", 300, 300);
 
     spacer = make_shared<Spacer>(50, 40);
-    spacer->draw("11_spacer", 300, 300);
+    spacer->draw("11_spacer.ps", 300, 300);
 
     pass[0]=(rectangle);
     pass[1]=(spacer);
