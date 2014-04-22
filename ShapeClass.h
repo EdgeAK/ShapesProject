@@ -18,18 +18,10 @@ using std::ofstream;
 #include <string>
 using std::string;
 #include <memory>
-using std::unique_ptr;
-#include <utility>
-using std::move;
+using std::shared_ptr;
 #include <vector>
 using std::vector;
 #include <cmath>
-
-template<typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args&&... args)
-{
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
 
 struct Current_Point
 {
@@ -226,15 +218,15 @@ class Rotation : public Shape
 {
 public:
     typedef double RotationAngle;
-    Rotation(unique_ptr<Shape> shape, RotationAngle rotation_angle);
+    Rotation(shared_ptr<Shape> shape, RotationAngle rotation_angle);
     void draw(ofstream & postScript);
 private:
-    unique_ptr<Shape> shape_ptr;
+    shared_ptr<Shape> shape_ptr;
     RotationAngle rotation_angle;
 };
-Rotation::Rotation(unique_ptr<Shape> shape, RotationAngle rotation_angle) : rotation_angle(rotation_angle)
+Rotation::Rotation(shared_ptr<Shape> shape, RotationAngle rotation_angle) : rotation_angle(rotation_angle)
 {
-    shape_ptr = move(shape);
+    shape_ptr = shape;
     box = shape_ptr->get_box();
     if(rotation_angle==90 || rotation_angle==270) {
         auto temp = box.height;
@@ -258,16 +250,16 @@ void Rotation::draw(ofstream & postScript)
 class Scaled : public Shape
 {
 public:
-    Scaled(unique_ptr<Shape> shape, double fx, double fy);
+    Scaled(shared_ptr<Shape> shape, double fx, double fy);
     void draw(ofstream & postScript);
 private:
-    unique_ptr<Shape> shape_ptr;
+    shared_ptr<Shape> shape_ptr;
     double scale_x;
     double scale_y;
 };
-Scaled::Scaled(unique_ptr<Shape> shape, double fx, double fy) : scale_x(fx), scale_y(fy)
+Scaled::Scaled(shared_ptr<Shape> shape, double fx, double fy) : scale_x(fx), scale_y(fy)
 {
-    shape_ptr = move(shape);
+    shape_ptr = shape;
     box = shape_ptr->get_box();
 }
 void Scaled::draw(ofstream & postScript)
@@ -284,20 +276,20 @@ void Scaled::draw(ofstream & postScript)
 class Layered : public Shape
 {
 public:
-    Layered(vector<unique_ptr<Shape>> & input);
+    Layered(vector<shared_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
-    vector<unique_ptr<Shape>> shape_vec;
+    vector<shared_ptr<Shape>> shape_vec;
 };
-Layered::Layered(vector<unique_ptr<Shape>> & input)
+Layered::Layered(vector<shared_ptr<Shape>> & input)
 {
     box.height=0;
     box.width=0;
     shape_vec.resize(input.size());
 	for(unsigned index=0; index<input.size(); ++index) {
-		shape_vec[index] = move(input[index]);
-        box.width+=shape_vec[index].get()->get_box().width;
-        box.height+=shape_vec[index].get()->get_box().height;
+		shape_vec[index] = input[index];
+        if(shape_vec[index].get()->get_box().width>box.width) box.width=shape_vec[index].get()->get_box().width;
+        if(shape_vec[index].get()->get_box().height>box.height) box.height=shape_vec[index].get()->get_box().height;
 	}
 }
 void Layered::draw(ofstream & postScript)
@@ -314,18 +306,18 @@ void Layered::draw(ofstream & postScript)
 class Vertical : public Shape
 {
 public:
-    Vertical(vector<unique_ptr<Shape>> & input);
+    Vertical(vector<shared_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
-    vector<unique_ptr<Shape>> shape_vec;
+    vector<shared_ptr<Shape>> shape_vec;
 };
-Vertical::Vertical(vector<unique_ptr<Shape>> & input)
+Vertical::Vertical(vector<shared_ptr<Shape>> & input)
 {
     box.height=0;
     box.width=0;
     shape_vec.resize(input.size());
     for(unsigned index=0; index<input.size(); ++index) {
-		shape_vec[index] = move(input[index]);
+		shape_vec[index] = input[index];
         box.height+=shape_vec[index].get()->get_box().height;
         if(shape_vec[index].get()->get_box().width>box.width) box.width=shape_vec[index].get()->get_box().width;
 	}
@@ -348,18 +340,18 @@ void Vertical::draw(ofstream & postScript)
 class Horizontal : public Shape
 {
 public:
-    Horizontal(vector<unique_ptr<Shape>> & input);
+    Horizontal(vector<shared_ptr<Shape>> & input);
     void draw(ofstream & postScript);
 private:
-    vector<unique_ptr<Shape>> shape_vec;
+    vector<shared_ptr<Shape>> shape_vec;
 };
-Horizontal::Horizontal(vector<unique_ptr<Shape>> & input)
+Horizontal::Horizontal(vector<shared_ptr<Shape>> & input)
 {
     box.height=0;
     box.width=0;
     shape_vec.resize(input.size());
     for(unsigned index=0; index<input.size(); ++index) {
-		shape_vec[index] = move(input[index]);
+		shape_vec[index] = input[index];
         box.width+=shape_vec[index].get()->get_box().width;
         if(shape_vec[index].get()->get_box().height>box.height) box.height=shape_vec[index].get()->get_box().height;
 	}
