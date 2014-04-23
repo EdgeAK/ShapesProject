@@ -165,27 +165,32 @@ void Polygon::draw(ofstream & postScript)
 {
     double half_angle = interior_angle / 2;
     double radius = length / (2*sin(M_PI/sides));
-    
-    postScript << "gsave" << endl;
-    postScript << "-5 0 rmoveto" << endl;
-    postScript << "10 0 rlineto" << endl;
-    postScript << "-5 0 rmoveto" << endl;
-    postScript << "0 -5 rmoveto" << endl;
-    postScript << "0 10 rlineto" << endl;
-    postScript << "0 -5 rmoveto" << endl;
-    postScript << -half_angle << " rotate" << endl;
-    postScript << 0 << " " << -radius << " rmoveto" << endl;
-    postScript << -half_angle << " rotate" << endl;
-    postScript << -length << " 0 rlineto" << endl;
-    for (auto k=0; k<sides-2; ++k)
-    {
-        postScript << -interior_angle << " rotate" << endl;
-        postScript << -sides << " 0 rlineto" << endl;
+    double x[sides];
+    double y[sides];
+    for(auto n=0; n<sides; ++n) {
+        x[n] = radius * cos(2*M_PI*n/sides) + point.x;
+        y[n] = radius * sin(2*M_PI*n/sides) + point.y;
+    }
+    postScript << "newpath" << endl;
+    postScript << x[0] << " " << y[0] << " moveto" << endl;
+    for(auto n=1; n<sides; ++n) {
+        postScript << x[n] << " " << y[n] << " lineto" << endl;
     }
     postScript << "closepath" << endl;
     postScript << "stroke" << endl;
-    postScript << "grestore" << endl;
 }
+
+class Triangle : public Polygon
+{
+public:
+    Triangle(double length) : Polygon(3, length) {}
+};
+
+class Square : public Polygon
+{
+public:
+    Square(double length) : Polygon(4, length) {}
+};
 
 //Rectangle
 class Rectangle : public Shape

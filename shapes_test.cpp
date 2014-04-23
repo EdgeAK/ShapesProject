@@ -10,6 +10,9 @@ void shape_test()
     shared_ptr<Shape> rectangle;
     shared_ptr<Shape> circle;
     shared_ptr<Shape> spacer;
+    shared_ptr<Shape> polygon;
+    shared_ptr<Shape> triangle;
+    shared_ptr<Shape> square;
     shared_ptr<Shape> rotation;
     shared_ptr<Shape> scaled;
     shared_ptr<Shape> layered;
@@ -77,6 +80,15 @@ void shape_test()
     pass[2]=(rotation);
     shared_ptr<Shape> multiple4 = make_shared<Vertical>(pass);
     multiple4->draw("18_vertical_of_decorated_multiple.ps", 300, 300);
+
+    triangle = make_shared<Triangle>(50);
+    triangle->draw("19_triangle.ps", 300, 300);
+    square = make_shared<Square>(50);
+    square->draw("20_sqaure.ps", 300, 300);
+    polygon = make_shared<Polygon>(5, 50);
+    polygon->draw("21_pentagon.ps", 300, 300);
+    polygon = make_shared<Polygon>(6, 50);
+    polygon->draw("22_hexagon", 300, 300);
 }
 
 int main()
