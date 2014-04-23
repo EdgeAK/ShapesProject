@@ -33,7 +33,7 @@ void shape_test()
     circle = make_shared<Circle>(50);
     rotation = make_shared<Rotation>(circle, 90);
     scaled = make_shared<Scaled>(circle, .5, 2);
-    circle->draw("06_circle", 300, 300);
+    circle->draw("06_circle.ps", 300, 300);
     rotation = make_shared<Rotation>(circle, 90);
     rotation->draw("07_rotated_circle.ps", 300, 300);
     scaled = make_shared<Scaled>(circle, .5, 2);

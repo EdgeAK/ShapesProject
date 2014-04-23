@@ -151,17 +151,40 @@ public:
 private:
     unsigned sides;
     double length;
+    double interior_angle;
 };
 Polygon::Polygon(unsigned sides, double length) : sides(sides), length(length)
 {
     set_point(0, 0);
+    interior_angle=360.0/sides;
     if (sides%2!=0) set_box(length*(1+cos(M_PI/sides)) / (2*sin(M_PI/sides)), (length*sin (M_PI*(-1)/2*sides)) / (sin(M_PI/sides)));
 	else if (sides%4==0) set_box(length*(cos(M_PI/sides)) / (sin(M_PI/sides)), (length*cos(M_PI/sides)) / (sin(M_PI/sides)));
 	else if (sides%4!=0 && sides%2==0) set_box(length*(cos(M_PI/sides)) / (sin(M_PI/sides)), length/sin(M_PI/sides));
 }
 void Polygon::draw(ofstream & postScript)
 {
-    //TODO calculate to impliment drawing
+    double half_angle = interior_angle / 2;
+    double radius = length / (2*sin(M_PI/sides));
+    
+    postScript << "gsave" << endl;
+    postScript << "-5 0 rmoveto" << endl;
+    postScript << "10 0 rlineto" << endl;
+    postScript << "-5 0 rmoveto" << endl;
+    postScript << "0 -5 rmoveto" << endl;
+    postScript << "0 10 rlineto" << endl;
+    postScript << "0 -5 rmoveto" << endl;
+    postScript << -half_angle << " rotate" << endl;
+    postScript << 0 << " " << -radius << " rmoveto" << endl;
+    postScript << -half_angle << " rotate" << endl;
+    postScript << -length << " 0 rlineto" << endl;
+    for (auto k=0; k<sides-2; ++k)
+    {
+        postScript << -interior_angle << " rotate" << endl;
+        postScript << -sides << " 0 rlineto" << endl;
+    }
+    postScript << "closepath" << endl;
+    postScript << "stroke" << endl;
+    postScript << "grestore" << endl;
 }
 
 //Rectangle
