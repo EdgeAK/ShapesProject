@@ -198,6 +198,7 @@ public:
 
 private:
     double _edgeLength;
+	double _interiorAngle;
 	int _numberOfEdges;
 };
 
@@ -206,6 +207,7 @@ Polygon::Polygon(double x, double y, double edgeLength, int numberOfEdges)
     setPoint(x, y);
     _edgeLength = edgeLength;
 	_numberOfEdges = numberOfEdges;
+	_interiorAngle = 360.0 / _numberOfEdges;
 	determineBox(edgeLength, numberOfEdges);
 }
 
@@ -224,7 +226,37 @@ void Polygon::determineBox(double edgeLength, int numberOfEdges)
 
 void Polygon::draw()
 {
+    string fileName;
+    cout << "Name of file: " << endl;
+    cin >> fileName;
+    ofstream postScriptOut = createFile(fileName + ".ps");
 
+    double halfOfTheInteriorAngle = _interiorAngle / 2;
+    double radius = _edgeLength / (2 * sin( M_PI / _numberOfEdges));
+    
+    postScriptOut << "gsave" << endl;
+    postScriptOut << "-5 0 rmoveto" << endl;
+    postScriptOut << "10 0 rlineto" << endl;
+    postScriptOut << "-5 0 rmoveto" << endl;
+    postScriptOut << "0 -5 rmoveto" << endl;
+    postScriptOut << "0 10 rlineto" << endl;
+    postScriptOut << "0 -5 rmoveto" << endl;
+    
+    
+    postScriptOut << -halfOfTheInteriorAngle << " rotate" << endl;
+    postScriptOut << 0 << " " << -radius << " rmoveto" << endl;
+
+    postScriptOut << -halfOfTheInteriorAngle << " rotate" << endl;
+    postScriptOut << -_edgeLength << " 0 rlineto" << endl;
+    for (auto k = 0; k < _numberOfEdges - 2; ++k)
+    {
+        postScriptOut << -_interiorAngle << " rotate" << endl;
+        postScriptOut << -_edgeLength << " 0 rlineto" << endl;
+    }
+    postScriptOut << "closepath" << endl;
+    postScriptOut << "stroke" << endl;
+
+    postScriptOut << "grestore" << endl;
 }
 
 #endif

@@ -21,5 +21,7 @@ int main()
     
     Circle C(216, 216, 216);
     C.draw();
+	Polygon P(300,300,144,6);
+	P.draw();
 
 }
